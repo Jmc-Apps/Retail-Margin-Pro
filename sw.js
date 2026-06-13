@@ -1,13 +1,23 @@
-const CACHE = 'retail-margin-pro-v1-00';
+const CACHE = 'retail-margin-pro-v1-02';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
   './manifest.webmanifest',
+  './assets/title-logo.png',
   './assets/logo-cropped.png',
+  './assets/retail-margin-pro-logo.png',
+  './assets/apple-touch-icon.png',
+  './assets/favicon.png',
   './assets/icon-192.png',
   './assets/icon-512.png'
+  'assets/master-banner.png',
+  'assets/master-icon.png',
+  'assets/icon-1024.png',
+  'assets/icon-384.png',
+  'assets/favicon-32.png',
+  'assets/favicon-16.png',
 ];
 
 self.addEventListener('install', (event) => {

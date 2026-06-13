@@ -306,7 +306,7 @@ $('exportBtn').addEventListener('click', () => {
   saveSettings();
   const data = {
     app: 'Retail Margin Pro',
-    version: '1.00',
+    version: '1.02',
     exportedAt: new Date().toISOString(),
     settings
   };
