@@ -27,6 +27,9 @@ const fields = {
 const costVatBtn = $('costVatBtn');
 const sellVatBtn = $('sellVatBtn');
 const deptBtn = $('deptBtn');
+const costLockBtn = $('costLockBtn');
+let costLocked = localStorage.getItem('rmpCostLocked') === 'true';
+let lockedCostExcl = toNumber(localStorage.getItem('rmpLockedCostExcl'));
 
 function loadSettings() {
   try {
@@ -77,7 +80,38 @@ function displayValue(name, exclValue) {
   return exclValue;
 }
 
+
+function renderCostLock() {
+  if (!costLockBtn) return;
+  costLockBtn.classList.toggle('locked', costLocked);
+  costLockBtn.title = costLocked ? 'Cost price locked' : 'Lock cost price';
+  costLockBtn.setAttribute('aria-label', costLockBtn.title);
+  costLockBtn.innerHTML = costLocked
+    ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10" width="14" height="10" rx="2.2" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="15" r="1.3" fill="currentColor"/></svg>'
+    : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 9.5-2.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10" width="14" height="10" rx="2.2" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="15" r="1.3" fill="currentColor"/></svg>';
+}
+
+function lockCurrentCost() {
+  const current = readManual('cost');
+  if (current !== null && Number.isFinite(current)) {
+    lockedCostExcl = current;
+    localStorage.setItem('rmpLockedCostExcl', String(lockedCostExcl));
+    setField('cost', displayValue('cost', lockedCostExcl));
+  }
+}
+
+function setCostLocked(value) {
+  costLocked = value;
+  if (costLocked) lockCurrentCost();
+  localStorage.setItem('rmpCostLocked', costLocked ? 'true' : 'false');
+  renderCostLock();
+}
+
 function touch(name) {
+  if (costLocked && name === 'cost') {
+    setField('cost', displayValue('cost', lockedCostExcl));
+    return;
+  }
   lastManual = lastManual.filter((item) => item !== name);
   lastManual.push(name);
   if (lastManual.length > 2) lastManual.shift();
@@ -88,7 +122,23 @@ function label(name) {
 }
 
 function compute() {
-  const pair = lastManual.filter((name) => toNumber(fields[name].value) !== null).slice(-2);
+  let pair = lastManual.filter((name) => toNumber(fields[name].value) !== null).slice(-2);
+
+  if (costLocked) {
+    if (!Number.isFinite(lockedCostExcl)) lockCurrentCost();
+    if (Number.isFinite(lockedCostExcl)) {
+      setField('cost', displayValue('cost', lockedCostExcl));
+      const latestUnlockedField = [...lastManual].reverse().find((name) => name !== 'cost' && toNumber(fields[name].value) !== null);
+      if (latestUnlockedField) {
+        pair = ['cost', latestUnlockedField];
+      } else {
+        $('statusText').textContent = 'Cost locked. Enter GP %, GP Rands or Sell Price.';
+        $('markupText').textContent = 'Markup: N/C';
+        return;
+      }
+    }
+  }
+
   if (pair.length < 2) {
     $('statusText').textContent = 'Enter any two values.';
     $('markupText').textContent = 'Markup: N/C';
@@ -96,7 +146,9 @@ function compute() {
   }
 
   const values = {};
-  pair.forEach((name) => values[name] = readManual(name));
+  pair.forEach((name) => {
+    values[name] = (costLocked && name === 'cost' && Number.isFinite(lockedCostExcl)) ? lockedCostExcl : readManual(name);
+  });
   const has = (name) => pair.includes(name);
 
   let cost;
@@ -142,17 +194,38 @@ function compute() {
   if (![cost, sell, gp, gpRands].every(Number.isFinite)) return showProblem('Check the entered values.');
   if (cost < 0 || sell < 0) return showProblem('Calculation creates a negative value.');
 
-  if (!has('cost')) setField('cost', displayValue('cost', cost));
-  if (!has('sell')) setField('sell', displayValue('sell', sell));
-  if (!has('gp')) setField('gp', gp);
-  if (!has('rands')) setField('rands', gpRands);
+  if (costLocked && Number.isFinite(lockedCostExcl)) {
+    cost = lockedCostExcl;
+    setField('cost', displayValue('cost', cost));
+    if (has('gp')) {
+      sell = cost / (1 - gp / 100);
+      gpRands = sell - cost;
+      setField('sell', displayValue('sell', sell));
+      setField('rands', gpRands);
+    } else if (has('sell')) {
+      gpRands = sell - cost;
+      gp = sell ? gpRands / sell * 100 : null;
+      setField('gp', gp);
+      setField('rands', gpRands);
+    } else if (has('rands')) {
+      sell = cost + gpRands;
+      gp = sell ? gpRands / sell * 100 : null;
+      setField('sell', displayValue('sell', sell));
+      setField('gp', gp);
+    }
+  } else {
+    if (!has('cost')) setField('cost', displayValue('cost', cost));
+    if (!has('sell')) setField('sell', displayValue('sell', sell));
+    if (!has('gp')) setField('gp', gp);
+    if (!has('rands')) setField('rands', gpRands);
+  }
 
   const markup = cost ? gpRands / cost * 100 : null;
   $('markupText').textContent = Number.isFinite(markup) ? `Markup: ${fmt(markup)}%` : 'Markup: N/C';
-  $('statusText').textContent = `Using ${label(pair[0])} + ${label(pair[1])}`;
+  $('statusText').textContent = costLocked ? `Cost locked. Using Cost Price + ${label(pair[1])}` : `Using ${label(pair[0])} + ${label(pair[1])}`;
 }
 
-function showProblem(message) {
+function showProblemfunction showProblem(message) {
   $('statusText').textContent = message;
 }
 
@@ -164,6 +237,11 @@ function renderDeptButton() {
 Object.entries(fields).forEach(([name, input]) => {
   input.addEventListener('input', () => {
     if (suppress) return;
+    if (costLocked && name === 'cost') {
+      setField('cost', displayValue('cost', lockedCostExcl));
+      compute();
+      return;
+    }
     if (name === 'gp' && selectedDept) {
       selectedDept = null;
       renderDeptButton();
@@ -177,18 +255,38 @@ Object.entries(fields).forEach(([name, input]) => {
   btn.addEventListener('click', () => {
     btn.classList.toggle('active');
     btn.textContent = btn.classList.contains('active') ? 'VAT ✓' : 'VAT';
+    if (costLocked && btn === costVatBtn && Number.isFinite(lockedCostExcl)) {
+      setField('cost', displayValue('cost', lockedCostExcl));
+    }
     compute();
   });
 });
 
 $('calculateBtn').addEventListener('click', compute);
+
+if (costLockBtn) {
+  costLockBtn.addEventListener('click', () => {
+    setCostLocked(!costLocked);
+    compute();
+  });
+}
+renderCostLock();
+if (costLocked && Number.isFinite(lockedCostExcl)) {
+  setField('cost', displayValue('cost', lockedCostExcl));
+}
 $('clearBtn').addEventListener('click', () => {
-  Object.values(fields).forEach((field) => field.value = '');
-  lastManual = [];
+  Object.entries(fields).forEach(([name, field]) => {
+    if (costLocked && name === 'cost' && Number.isFinite(lockedCostExcl)) {
+      setField('cost', displayValue('cost', lockedCostExcl));
+    } else {
+      field.value = '';
+    }
+  });
+  lastManual = costLocked && Number.isFinite(lockedCostExcl) ? ['cost'] : [];
   selectedDept = null;
   renderDeptButton();
   $('markupText').textContent = 'Markup: N/C';
-  $('statusText').textContent = 'Enter any two values.';
+  $('statusText').textContent = costLocked ? 'Cost locked. Enter GP %, GP Rands or Sell Price.' : 'Enter any two values.';
 });
 
 deptBtn.addEventListener('click', () => {
@@ -353,7 +451,7 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
 
-/* v1.08-cost-lock */
+/* v1.09-cost-lock */
 (function(){
   function n(v){v=parseFloat(String(v||'').replace(',','.'));return isFinite(v)?v:null}
   function sv(el,v){if(el&&isFinite(v))el.value=(Math.round(v*100)/100).toFixed(2)}
