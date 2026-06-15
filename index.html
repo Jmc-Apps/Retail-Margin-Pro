@@ -59,8 +59,9 @@
     <div id="deptChoices" class="list"></div>
   </dialog>
 
-  <dialog id="settingsDialog" class="modal">
+  <dialog id="settingsDialog" class="modal settings-modal">
     <div class="modal-head"><h2>Settings</h2><button class="close" data-close="settingsDialog">×</button></div>
+    <div class="settings-scroll">
     <section class="setting-section">
       <label for="vatRateInput">VAT Rate %</label>
       <input id="vatRateInput" inputmode="decimal" type="text" placeholder="15.00">
@@ -86,6 +87,7 @@
     </section>
 
     <button id="saveSettingsBtn" class="primary full" type="button">Save Settings</button>
+    </div>
   </dialog>
 
   <script src="app.js"></script>

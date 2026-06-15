@@ -428,7 +428,7 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
 
-/* v1.12-cost-lock */
+/* v1.13-cost-lock */
 (function(){
   function n(v){v=parseFloat(String(v||'').replace(',','.'));return isFinite(v)?v:null}
   function sv(el,v){if(el&&isFinite(v))el.value=(Math.round(v*100)/100).toFixed(2)}
