@@ -40,7 +40,8 @@ const sellVatBtn = $('sellVatBtn');
 const deptBtn = $('deptBtn');
 const costLockBtn = $('costLockBtn');
 let costLocked = localStorage.getItem('rmpCostLocked') === 'true';
-let lockedCost = toNumber(localStorage.getItem('rmpLockedCost'));
+let lockedCostRaw = localStorage.getItem('rmpLockedCost');
+let lockedCost = lockedCostRaw === null || lockedCostRaw === '' ? null : toNumber(lockedCostRaw);
 
 function loadSettings() {
   try {
@@ -104,7 +105,11 @@ function captureLockedCost() {
     lockedCost = value;
     localStorage.setItem('rmpLockedCost', String(lockedCost));
     setField('cost', displayValue('cost', lockedCost));
+    return true;
   }
+  lockedCost = null;
+  localStorage.removeItem('rmpLockedCost');
+  return false;
 }
 
 function touch(name) {
@@ -121,9 +126,8 @@ function compute() {
   let pair = lastManual.filter((name) => toNumber(fields[name].value) !== null).slice(-2);
 
   if (costLocked) {
-    if (!Number.isFinite(lockedCost)) captureLockedCost();
     if (!Number.isFinite(lockedCost)) {
-      $('statusText').textContent = 'Lock needs a Cost Price value.';
+      $('statusText').textContent = 'Enter a Cost Price value.';
       $('markupText').textContent = 'Markup: N/C';
       return;
     }
@@ -218,10 +222,12 @@ Object.entries(fields).forEach(([name, input]) => {
       if (Number.isFinite(value)) {
         lockedCost = value;
         localStorage.setItem('rmpLockedCost', String(lockedCost));
+        $('statusText').textContent = 'Cost locked. Cost Price updated manually.';
+      } else {
+        lockedCost = null;
+        localStorage.removeItem('rmpLockedCost');
+        $('statusText').textContent = 'Enter a Cost Price value.';
       }
-      $('statusText').textContent = Number.isFinite(lockedCost)
-        ? 'Cost locked. Cost Price updated manually.'
-        : 'Lock needs a Cost Price value.';
       return;
     }
     if (name === 'gp' && selectedDept) {
@@ -248,12 +254,26 @@ $('calculateBtn').addEventListener('click', compute);
 
 if (costLockBtn) {
   costLockBtn.addEventListener('click', () => {
-    if (!costLocked) captureLockedCost();
-    costLocked = !costLocked;
+    if (!costLocked) {
+      if (!captureLockedCost()) {
+        costLocked = false;
+        localStorage.setItem('rmpCostLocked', 'false');
+        renderCostLock();
+        $('statusText').textContent = 'Enter a Cost Price before locking.';
+        return;
+      }
+      costLocked = true;
+    } else {
+      costLocked = false;
+    }
     localStorage.setItem('rmpCostLocked', costLocked ? 'true' : 'false');
     renderCostLock();
     compute();
   });
+}
+if (costLocked && !Number.isFinite(lockedCost)) {
+  costLocked = false;
+  localStorage.setItem('rmpCostLocked', 'false');
 }
 renderCostLock();
 if (costLocked && Number.isFinite(lockedCost)) setField('cost', displayValue('cost', lockedCost));
@@ -434,7 +454,7 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
 
-/* v1.15-cost-lock */
+/* v1.16-cost-lock */
 (function(){
   function n(v){v=parseFloat(String(v||'').replace(',','.'));return isFinite(v)?v:null}
   function sv(el,v){if(el&&isFinite(v))el.value=(Math.round(v*100)/100).toFixed(2)}

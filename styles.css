@@ -8,7 +8,7 @@ input{width:100%;border:1.4px solid #aeb7c4;border-radius:8px;padding:14px 16px;
 @media (max-width:360px){.title-logo{width:225px}input{font-size:31px}.label-row label{font-size:19px}.pill{min-width:64px}}
 
 
-/* v1.15 master artwork branding */
+/* v1.16 master artwork branding */
 .app-header, header {
   background: #101826;
 }
@@ -24,13 +24,13 @@ input{width:100%;border:1.4px solid #aeb7c4;border-radius:8px;padding:14px 16px;
   object-fit: contain;
 }
 
-/* v1.15 cost lock */
+/* v1.16 cost lock */
 .lock-toggle{width:44px;height:44px;min-width:44px;border-radius:12px;padding:0;display:inline-flex;align-items:center;justify-content:center;color:#6b7280;border:1px solid rgba(15,23,42,.18);background:#fff;box-shadow:0 1px 2px rgba(15,23,42,.08);vertical-align:middle;margin-left:6px;margin-right:6px}
 .lock-toggle svg{width:22px;height:22px}
 .lock-toggle.locked{color:#fff;background:#0b5bd3;border-color:#0b5bd3}
 .lock-toggle:active{transform:scale(.97)}
 
-/* v1.15 cost lock */
+/* v1.16 cost lock */
 .lock-toggle {
   width: 44px;
   min-width: 44px;
@@ -50,7 +50,7 @@ input{width:100%;border:1.4px solid #aeb7c4;border-radius:8px;padding:14px 16px;
 }
 
 
-/* v1.15 iPhone popup scrolling fix */
+/* v1.16 iPhone popup scrolling fix */
 dialog {
   max-height: min(86vh, 760px);
   overflow: hidden;
@@ -106,7 +106,7 @@ dialog > div {
 }
 
 
-/* v1.15 settings popup hard scroll fix */
+/* v1.16 settings popup hard scroll fix */
 #settingsDialog.settings-modal {
   width: min(560px, calc(100vw - 24px));
   max-width: calc(100vw - 24px);
@@ -147,7 +147,7 @@ dialog > div {
 }
 
 
-/* v1.15 settings popup same size as department popup */
+/* v1.16 settings popup same size as department popup */
 #settingsDialog.settings-modal,
 #settingsDialog.modal {
   width: min(92vw, 560px) !important;
