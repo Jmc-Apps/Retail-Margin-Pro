@@ -1,5 +1,8 @@
 'use strict';
 
+const APP_VERSION = 'v1.20';
+const APP_BUILD_DATE = '2026-06-15';
+
 const KEY = 'retailMarginPro.v1.settings';
 const defaults = {
   vatRate: 15,
@@ -39,7 +42,7 @@ const costVatBtn = $('costVatBtn');
 const sellVatBtn = $('sellVatBtn');
 const deptBtn = $('deptBtn');
 const costLockBtn = $('costLockBtn');
-let costLocked = localStorage.getItem('rmpCostLocked') === 'true';
+let costLocked = false;
 let lockedCostValue = null;
 
 function loadSettings() {
@@ -111,25 +114,22 @@ function setCostLockState(locked) {
     const currentCost = readCostExclFromField();
     if (!Number.isFinite(currentCost)) {
       costLocked = false;
-      localStorage.setItem('rmpCostLocked', 'false');
+      lockedCostValue = null;
       renderCostLock();
       $('statusText').textContent = 'Enter a Cost Price before locking.';
       return false;
     }
     lockedCostValue = currentCost;
     costLocked = true;
-    localStorage.setItem('rmpCostLocked', 'true');
     $('statusText').textContent = 'Cost Price locked.';
   } else {
     costLocked = false;
     lockedCostValue = null;
-    localStorage.setItem('rmpCostLocked', 'false');
     $('statusText').textContent = 'Cost Price unlocked.';
   }
   renderCostLock();
   return true;
 }
-
 
 function touch(name) {
   lastManual = lastManual.filter((item) => item !== name);
@@ -145,15 +145,16 @@ function compute() {
   let pair = lastManual.filter((name) => toNumber(fields[name].value) !== null).slice(-2);
 
   if (costLocked) {
-    const currentCost = readCostExclFromField();
-    if (Number.isFinite(currentCost)) lockedCostValue = currentCost;
+    const driver = [...lastManual].reverse().find((name) => name !== 'cost' && toNumber(fields[name].value) !== null);
+    if (!Number.isFinite(lockedCostValue)) {
+      const currentCost = readCostExclFromField();
+      if (Number.isFinite(currentCost)) lockedCostValue = currentCost;
+    }
     if (!Number.isFinite(lockedCostValue)) {
       $('statusText').textContent = 'Enter a Cost Price before locking.';
       $('markupText').textContent = 'Markup: N/C';
       return;
     }
-
-    const driver = [...lastManual].reverse().find((name) => name !== 'cost' && toNumber(fields[name].value) !== null);
     if (!driver) {
       $('statusText').textContent = 'Cost locked. Enter GP %, GP Rands or Sell Price.';
       $('markupText').textContent = 'Markup: N/C';
@@ -247,7 +248,6 @@ Object.entries(fields).forEach(([name, input]) => {
         lockedCostValue = currentCost;
         $('statusText').textContent = 'Cost locked. Cost Price updated manually.';
       } else {
-        lockedCostValue = null;
         $('statusText').textContent = 'Enter a Cost Price value.';
       }
       return;
@@ -275,15 +275,6 @@ if (costLockBtn) {
     const changed = setCostLockState(!costLocked);
     if (changed) compute();
   });
-}
-if (costLocked) {
-  const startupCost = readCostExclFromField();
-  if (Number.isFinite(startupCost)) {
-    lockedCostValue = startupCost;
-  } else {
-    costLocked = false;
-    localStorage.setItem('rmpCostLocked', 'false');
-  }
 }
 renderCostLock();
 $('clearBtn').addEventListener('click', () => {
@@ -421,7 +412,7 @@ $('exportBtn').addEventListener('click', () => {
   const link = document.createElement('a');
   const date = new Date().toISOString().slice(0, 10);
   link.href = URL.createObjectURL(blob);
-  link.download = `RetailMarginPro_Settings_${date}.json`;
+  link.download = `RetailMarginPro_Backup_${date}.json`;
   link.click();
   setTimeout(() => URL.revokeObjectURL(link.href), 1000);
 });
@@ -459,22 +450,3 @@ renderDeptButton();
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
-
-/* v1.18-cost-lock */
-(function(){
-  function n(v){v=parseFloat(String(v||'').replace(',','.'));return isFinite(v)?v:null}
-  function sv(el,v){if(el&&isFinite(v))el.value=(Math.round(v*100)/100).toFixed(2)}
-  function find(words){words=words.map(w=>w.toLowerCase());for(const i of document.querySelectorAll('input')){let h=((i.id||'')+' '+(i.name||'')+' '+(i.placeholder||'')+' '+(i.getAttribute('aria-label')||'')+' '+((i.closest('label,.field,.input-group,div')||{}).textContent||'')).toLowerCase();if(words.some(w=>h.includes(w)))return i}return null}
-  function setup(){
-    const btn=document.getElementById('costLockBtn'); if(!btn)return;
-    const cost=find(['cost']), gp=find(['gp']), gpRand=find(['gp rands','gp rand','rands']), sell=find(['sell','selling']);
-    let locked=localStorage.getItem('rmpCostLocked')==='true', fixed=n(cost&&cost.value);
-    function draw(){btn.classList.toggle('locked',locked);btn.innerHTML=locked?'<svg viewBox="0 0 24 24"><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10" width="14" height="10" rx="2.2" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="15" r="1.3" fill="currentColor"/></svg>':'<svg viewBox="0 0 24 24"><path d="M7 10V8a5 5 0 0 1 9.5-2.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10" width="14" height="10" rx="2.2" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="15" r="1.3" fill="currentColor"/></svg>';btn.title=locked?'Cost price locked':'Lock cost price'}
-    function calc(changed){if(!locked||!cost)return;let c=n(cost.value);if(c!==null)fixed=c;if(fixed===null)return;let g=n(gp&&gp.value), gr=n(gpRand&&gpRand.value), s=n(sell&&sell.value);if(changed===sell&&s!==null){sv(cost,fixed);sv(gpRand,s-fixed);if(s)sv(gp,(s-fixed)/s*100)}else if(changed===gp&&g!==null&&g<100){let ns=fixed/(1-g/100);sv(cost,fixed);sv(sell,ns);sv(gpRand,ns-fixed)}else if(changed===gpRand&&gr!==null){let ns=fixed+gr;sv(cost,fixed);sv(sell,ns);if(ns)sv(gp,gr/ns*100)}else sv(cost,fixed)}
-    btn.addEventListener('click',()=>{locked=!locked;let c=n(cost&&cost.value);if(c!==null)fixed=c;localStorage.setItem('rmpCostLocked',locked);draw()});
-    [gp,gpRand,sell].forEach(el=>{if(el){el.addEventListener('input',()=>setTimeout(()=>calc(el),0));el.addEventListener('change',()=>setTimeout(()=>calc(el),0))}});
-    if(cost)cost.addEventListener('input',()=>{let c=n(cost.value);if(c!==null)fixed=c});
-    draw();
-  }
-  document.readyState==='loading'?document.addEventListener('DOMContentLoaded',setup):setup();
-})();
