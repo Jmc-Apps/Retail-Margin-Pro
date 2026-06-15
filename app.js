@@ -40,8 +40,7 @@ const sellVatBtn = $('sellVatBtn');
 const deptBtn = $('deptBtn');
 const costLockBtn = $('costLockBtn');
 let costLocked = localStorage.getItem('rmpCostLocked') === 'true';
-let lockedCostRaw = localStorage.getItem('rmpLockedCost');
-let lockedCost = lockedCostRaw === null || lockedCostRaw === '' ? null : toNumber(lockedCostRaw);
+let lockedCostValue = null;
 
 function loadSettings() {
   try {
@@ -92,25 +91,45 @@ function displayValue(name, exclValue) {
   return exclValue;
 }
 
+function readCostExclFromField() {
+  const value = readManual('cost');
+  return Number.isFinite(value) ? value : null;
+}
+
 function renderCostLock() {
   if (!costLockBtn) return;
   costLockBtn.classList.toggle('locked', costLocked);
   costLockBtn.title = costLocked ? 'Cost Price Locked' : 'Lock Cost Price';
   costLockBtn.setAttribute('aria-label', costLockBtn.title);
+  costLockBtn.innerHTML = costLocked
+    ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10" width="14" height="10" rx="2.2" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="15" r="1.3" fill="currentColor"/></svg>'
+    : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10" width="14" height="10" rx="2.2" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="15" r="1.3" fill="currentColor"/></svg>';
 }
 
-function captureLockedCost() {
-  const value = readManual('cost');
-  if (Number.isFinite(value)) {
-    lockedCost = value;
-    localStorage.setItem('rmpLockedCost', String(lockedCost));
-    setField('cost', displayValue('cost', lockedCost));
-    return true;
+function setCostLockState(locked) {
+  if (locked) {
+    const currentCost = readCostExclFromField();
+    if (!Number.isFinite(currentCost)) {
+      costLocked = false;
+      localStorage.setItem('rmpCostLocked', 'false');
+      renderCostLock();
+      $('statusText').textContent = 'Enter a Cost Price before locking.';
+      return false;
+    }
+    lockedCostValue = currentCost;
+    costLocked = true;
+    localStorage.setItem('rmpCostLocked', 'true');
+    $('statusText').textContent = 'Cost Price locked.';
+  } else {
+    costLocked = false;
+    lockedCostValue = null;
+    localStorage.setItem('rmpCostLocked', 'false');
+    $('statusText').textContent = 'Cost Price unlocked.';
   }
-  lockedCost = null;
-  localStorage.removeItem('rmpLockedCost');
-  return false;
+  renderCostLock();
+  return true;
 }
+
 
 function touch(name) {
   lastManual = lastManual.filter((item) => item !== name);
@@ -126,13 +145,14 @@ function compute() {
   let pair = lastManual.filter((name) => toNumber(fields[name].value) !== null).slice(-2);
 
   if (costLocked) {
-    if (!Number.isFinite(lockedCost)) {
-      $('statusText').textContent = 'Enter a Cost Price value.';
+    const currentCost = readCostExclFromField();
+    if (Number.isFinite(currentCost)) lockedCostValue = currentCost;
+    if (!Number.isFinite(lockedCostValue)) {
+      $('statusText').textContent = 'Enter a Cost Price before locking.';
       $('markupText').textContent = 'Markup: N/C';
       return;
     }
 
-    setField('cost', displayValue('cost', lockedCost));
     const driver = [...lastManual].reverse().find((name) => name !== 'cost' && toNumber(fields[name].value) !== null);
     if (!driver) {
       $('statusText').textContent = 'Cost locked. Enter GP %, GP Rands or Sell Price.';
@@ -149,7 +169,7 @@ function compute() {
   }
 
   const values = {};
-  pair.forEach((name) => values[name] = (costLocked && name === 'cost') ? lockedCost : readManual(name));
+  pair.forEach((name) => values[name] = (costLocked && name === 'cost') ? lockedCostValue : readManual(name));
   const has = (name) => pair.includes(name);
 
   let cost;
@@ -195,7 +215,7 @@ function compute() {
   if (![cost, sell, gp, gpRands].every(Number.isFinite)) return showProblem('Check the entered values.');
   if (cost < 0 || sell < 0) return showProblem('Calculation creates a negative value.');
 
-  if (!has('cost') || costLocked) setField('cost', displayValue('cost', cost));
+  if (!costLocked && !has('cost')) setField('cost', displayValue('cost', cost));
   if (!has('sell')) setField('sell', displayValue('sell', sell));
   if (!has('gp')) setField('gp', gp);
   if (!has('rands')) setField('rands', gpRands);
@@ -217,22 +237,20 @@ function renderDeptButton() {
 Object.entries(fields).forEach(([name, input]) => {
   input.addEventListener('input', () => {
     if (suppress) return;
-    if (costLocked && name === 'cost') {
-      const value = readManual('cost');
-      if (Number.isFinite(value)) {
-        lockedCost = value;
-        localStorage.setItem('rmpLockedCost', String(lockedCost));
-        $('statusText').textContent = 'Cost locked. Cost Price updated manually.';
-      } else {
-        lockedCost = null;
-        localStorage.removeItem('rmpLockedCost');
-        $('statusText').textContent = 'Enter a Cost Price value.';
-      }
-      return;
-    }
     if (name === 'gp' && selectedDept) {
       selectedDept = null;
       renderDeptButton();
+    }
+    if (costLocked && name === 'cost') {
+      const currentCost = readCostExclFromField();
+      if (Number.isFinite(currentCost)) {
+        lockedCostValue = currentCost;
+        $('statusText').textContent = 'Cost locked. Cost Price updated manually.';
+      } else {
+        lockedCostValue = null;
+        $('statusText').textContent = 'Enter a Cost Price value.';
+      }
+      return;
     }
     touch(name);
     compute();
@@ -243,8 +261,8 @@ Object.entries(fields).forEach(([name, input]) => {
   btn.addEventListener('click', () => {
     btn.classList.toggle('active');
     btn.textContent = btn.classList.contains('active') ? 'VAT ✓' : 'VAT';
-    if (costLocked && btn === costVatBtn && Number.isFinite(lockedCost)) {
-      setField('cost', displayValue('cost', lockedCost));
+    if (costLocked && btn === costVatBtn && Number.isFinite(lockedCostValue)) {
+      setField('cost', displayValue('cost', lockedCostValue));
     }
     compute();
   });
@@ -254,36 +272,24 @@ $('calculateBtn').addEventListener('click', compute);
 
 if (costLockBtn) {
   costLockBtn.addEventListener('click', () => {
-    if (!costLocked) {
-      if (!captureLockedCost()) {
-        costLocked = false;
-        localStorage.setItem('rmpCostLocked', 'false');
-        renderCostLock();
-        $('statusText').textContent = 'Enter a Cost Price before locking.';
-        return;
-      }
-      costLocked = true;
-    } else {
-      costLocked = false;
-    }
-    localStorage.setItem('rmpCostLocked', costLocked ? 'true' : 'false');
-    renderCostLock();
-    compute();
+    const changed = setCostLockState(!costLocked);
+    if (changed) compute();
   });
 }
-if (costLocked && !Number.isFinite(lockedCost)) {
-  costLocked = false;
-  localStorage.setItem('rmpCostLocked', 'false');
+if (costLocked) {
+  const startupCost = readCostExclFromField();
+  if (Number.isFinite(startupCost)) {
+    lockedCostValue = startupCost;
+  } else {
+    costLocked = false;
+    localStorage.setItem('rmpCostLocked', 'false');
+  }
 }
 renderCostLock();
-if (costLocked && Number.isFinite(lockedCost)) setField('cost', displayValue('cost', lockedCost));
 $('clearBtn').addEventListener('click', () => {
   Object.entries(fields).forEach(([name, field]) => {
-    if (costLocked && name === 'cost' && Number.isFinite(lockedCost)) {
-      setField('cost', displayValue('cost', lockedCost));
-    } else {
-      field.value = '';
-    }
+    if (costLocked && name === 'cost') return;
+    field.value = '';
   });
   lastManual = [];
   selectedDept = null;
@@ -454,7 +460,7 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
 
-/* v1.16-cost-lock */
+/* v1.18-cost-lock */
 (function(){
   function n(v){v=parseFloat(String(v||'').replace(',','.'));return isFinite(v)?v:null}
   function sv(el,v){if(el&&isFinite(v))el.value=(Math.round(v*100)/100).toFixed(2)}
