@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "v2.02";
+const APP_VERSION = "v2.03";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
