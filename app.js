@@ -1,9 +1,7 @@
-'use strict';
+"use strict";
 
-const APP_VERSION = 'v1.20';
-const APP_BUILD_DATE = '2026-06-15';
-
-const KEY = 'retailMarginPro.v1.settings';
+const APP_VERSION = "v2.02";
+const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
   departments: [
@@ -25,428 +23,379 @@ const defaults = {
   ]
 };
 
+const $ = id => document.getElementById(id);
+const displays = {
+  cost: $("costDisplay"),
+  gp: $("gpDisplay"),
+  sell: $("sellDisplay"),
+  rands: $("randsDisplay")
+};
+
 let settings = loadSettings();
+let values = { cost: "", gp: "", sell: "", rands: "" };
 let lastManual = [];
+let activeField = "cost";
+let replaceOnNextKey = true;
+let costVat = false;
+let sellVat = false;
+let costLocked = false;
+let lockedCostExcl = null;
 let selectedDept = null;
 let editingDeptIndex = null;
-let suppress = false;
 
-const $ = (id) => document.getElementById(id);
-const fields = {
-  cost: $('costInput'),
-  gp: $('gpInput'),
-  rands: $('gpRandInput'),
-  sell: $('sellInput')
-};
-const costVatBtn = $('costVatBtn');
-const sellVatBtn = $('sellVatBtn');
-const deptBtn = $('deptBtn');
-const costLockBtn = $('costLockBtn');
-let costLocked = false;
-let lockedCostValue = null;
-
-function loadSettings() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+function loadSettings(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
     return {
-      vatRate: typeof saved.vatRate === 'number' ? saved.vatRate : defaults.vatRate,
+      vatRate: typeof saved.vatRate === "number" ? saved.vatRate : defaults.vatRate,
       departments: Array.isArray(saved.departments) ? saved.departments : defaults.departments
     };
-  } catch {
-    return { ...defaults };
+  }catch{
+    return structuredClone(defaults);
   }
 }
-
-function saveSettings() {
+function saveSettings(){
   localStorage.setItem(KEY, JSON.stringify(settings));
 }
-
-function toNumber(value) {
-  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
-  const cleaned = String(value || '').replace(/,/g, '.').replace(/[^0-9.\-]/g, '').trim();
-  const num = parseFloat(cleaned);
-  return Number.isFinite(num) ? num : null;
+function num(str){
+  if (typeof str === "number") return Number.isFinite(str) ? str : null;
+  const cleaned = String(str ?? "").replace(",", ".").replace(/[^0-9.\-]/g, "");
+  if (cleaned === "" || cleaned === "-" || cleaned === "." || cleaned === "-.") return null;
+  const n = parseFloat(cleaned);
+  return Number.isFinite(n) ? n : null;
 }
-
-function fmt(num) {
-  return Number.isFinite(num) ? (Math.round((num + Number.EPSILON) * 100) / 100).toFixed(2) : '';
+function fmt(n){
+  return Number.isFinite(n) ? (Math.round((n + Number.EPSILON) * 100) / 100).toFixed(2) : "0.00";
 }
-
-function setField(name, value) {
-  suppress = true;
-  fields[name].value = fmt(value);
-  suppress = false;
+function vatFactor(){ return 1 + settings.vatRate / 100; }
+function displayToExcl(field){
+  let n = num(values[field]);
+  if (n === null) return null;
+  if (field === "cost" && costVat) n /= vatFactor();
+  if (field === "sell" && sellVat) n /= vatFactor();
+  return n;
 }
-
-function readManual(name) {
-  let value = toNumber(fields[name].value);
-  if (value === null) return null;
-  const vatFactor = 1 + settings.vatRate / 100;
-  if (name === 'cost' && costVatBtn.classList.contains('active')) value /= vatFactor;
-  if (name === 'sell' && sellVatBtn.classList.contains('active')) value /= vatFactor;
-  return value;
+function exclToDisplay(field, n){
+  if (field === "cost" && costVat) return n * vatFactor();
+  if (field === "sell" && sellVat) return n * vatFactor();
+  return n;
 }
-
-function displayValue(name, exclValue) {
-  const vatFactor = 1 + settings.vatRate / 100;
-  if (name === 'cost' && costVatBtn.classList.contains('active')) return exclValue * vatFactor;
-  if (name === 'sell' && sellVatBtn.classList.contains('active')) return exclValue * vatFactor;
-  return exclValue;
+function setValue(field, n){
+  values[field] = fmt(n);
+  displays[field].textContent = values[field];
 }
-
-function readCostExclFromField() {
-  const value = readManual('cost');
-  return Number.isFinite(value) ? value : null;
+function setRaw(field, raw){
+  values[field] = raw;
+  displays[field].textContent = raw || "0.00";
 }
-
-function renderCostLock() {
-  if (!costLockBtn) return;
-  costLockBtn.classList.toggle('locked', costLocked);
-  costLockBtn.title = costLocked ? 'Cost Price Locked' : 'Lock Cost Price';
-  costLockBtn.setAttribute('aria-label', costLockBtn.title);
-  costLockBtn.innerHTML = costLocked
-    ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10" width="14" height="10" rx="2.2" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="15" r="1.3" fill="currentColor"/></svg>'
-    : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10" width="14" height="10" rx="2.2" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="15" r="1.3" fill="currentColor"/></svg>';
-}
-
-function setCostLockState(locked) {
-  if (locked) {
-    const currentCost = readCostExclFromField();
-    if (!Number.isFinite(currentCost)) {
-      costLocked = false;
-      lockedCostValue = null;
-      renderCostLock();
-      $('statusText').textContent = 'Enter a Cost Price before locking.';
-      return false;
-    }
-    lockedCostValue = currentCost;
-    costLocked = true;
-    $('statusText').textContent = 'Cost Price locked.';
-  } else {
-    costLocked = false;
-    lockedCostValue = null;
-    $('statusText').textContent = 'Cost Price unlocked.';
-  }
-  renderCostLock();
-  return true;
-}
-
-function touch(name) {
-  lastManual = lastManual.filter((item) => item !== name);
-  lastManual.push(name);
+function touch(field){
+  lastManual = lastManual.filter(x => x !== field);
+  lastManual.push(field);
   if (lastManual.length > 2) lastManual.shift();
 }
-
-function label(name) {
-  return { cost: 'Cost Price', gp: 'GP %', rands: 'GP Rands', sell: 'Sell Price' }[name];
+function setActive(field){
+  const changed = activeField !== field;
+  activeField = field;
+  if (changed) replaceOnNextKey = true;
+  document.querySelectorAll(".calc-row").forEach(row => {
+    row.classList.toggle("active", row.dataset.field === field);
+  });
+  $("statusText").textContent = "Active Field: " + label(field);
+}
+function label(field){
+  return { cost:"Cost", gp:"GP %", sell:"Sell", rands:"GP Rands" }[field];
+}
+function renderToggles(){
+  $("costVatBtn").classList.toggle("active", costVat);
+  $("costVatBtn").textContent = costVat ? "VAT ✓" : "VAT";
+  $("sellVatBtn").classList.toggle("active", sellVat);
+  $("sellVatBtn").textContent = sellVat ? "VAT ✓" : "VAT";
+  $("costLockBtn").classList.toggle("active", costLocked);
+  $("costLockBtn").textContent = costLocked ? "🔒" : "🔓";
+  $("deptBtn").textContent = selectedDept ? selectedDept.name : "Dept";
+  $("deptBtn").classList.toggle("active", Boolean(selectedDept));
+}
+function showProblem(message){
+  $("statusText").textContent = message;
 }
 
-function compute() {
-  let pair = lastManual.filter((name) => toNumber(fields[name].value) !== null).slice(-2);
+function compute(){
+  let pair = lastManual.filter(f => num(values[f]) !== null).slice(-2);
 
-  if (costLocked) {
-    const driver = [...lastManual].reverse().find((name) => name !== 'cost' && toNumber(fields[name].value) !== null);
-    if (!Number.isFinite(lockedCostValue)) {
-      const currentCost = readCostExclFromField();
-      if (Number.isFinite(currentCost)) lockedCostValue = currentCost;
+  if (costLocked){
+    const c = displayToExcl("cost");
+    if (Number.isFinite(c)) lockedCostExcl = c;
+    const driver = [...lastManual].reverse().find(f => f !== "cost" && num(values[f]) !== null);
+    if (!Number.isFinite(lockedCostExcl)){
+      $("markupText").textContent = "Markup: N/C";
+      return showProblem("Enter Cost before locking.");
     }
-    if (!Number.isFinite(lockedCostValue)) {
-      $('statusText').textContent = 'Enter a Cost Price before locking.';
-      $('markupText').textContent = 'Markup: N/C';
-      return;
+    if (!driver){
+      $("markupText").textContent = "Markup: N/C";
+      return showProblem("Cost locked. Enter GP %, Sell or GP Rands.");
     }
-    if (!driver) {
-      $('statusText').textContent = 'Cost locked. Enter GP %, GP Rands or Sell Price.';
-      $('markupText').textContent = 'Markup: N/C';
-      return;
-    }
-    pair = ['cost', driver];
+    pair = ["cost", driver];
   }
 
-  if (pair.length < 2) {
-    $('statusText').textContent = 'Enter any two values.';
-    $('markupText').textContent = 'Markup: N/C';
+  if (pair.length < 2){
+    $("markupText").textContent = "Markup: N/C";
     return;
   }
 
-  const values = {};
-  pair.forEach((name) => values[name] = (costLocked && name === 'cost') ? lockedCostValue : readManual(name));
-  const has = (name) => pair.includes(name);
+  const has = f => pair.includes(f);
+  const v = {};
+  pair.forEach(f => v[f] = (costLocked && f === "cost") ? lockedCostExcl : displayToExcl(f));
 
-  let cost;
-  let sell;
-  let gp;
-  let gpRands;
+  let cost, sell, gp, rands;
 
-  if (has('cost') && has('gp')) {
-    cost = values.cost;
-    gp = values.gp;
-    if (gp >= 100) return showProblem('GP% must be below 100.');
+  if (has("cost") && has("gp")){
+    cost = v.cost; gp = v.gp;
+    if (gp >= 100) return showProblem("GP% must be below 100.");
     sell = cost / (1 - gp / 100);
-    gpRands = sell - cost;
-  } else if (has('cost') && has('rands')) {
-    cost = values.cost;
-    gpRands = values.rands;
-    sell = cost + gpRands;
-    gp = sell ? gpRands / sell * 100 : null;
-  } else if (has('cost') && has('sell')) {
-    cost = values.cost;
-    sell = values.sell;
-    gpRands = sell - cost;
-    gp = sell ? gpRands / sell * 100 : null;
-  } else if (has('sell') && has('gp')) {
-    sell = values.sell;
-    gp = values.gp;
-    if (gp >= 100) return showProblem('GP% must be below 100.');
+    rands = sell - cost;
+  } else if (has("cost") && has("rands")){
+    cost = v.cost; rands = v.rands;
+    sell = cost + rands;
+    gp = sell ? rands / sell * 100 : null;
+  } else if (has("cost") && has("sell")){
+    cost = v.cost; sell = v.sell;
+    rands = sell - cost;
+    gp = sell ? rands / sell * 100 : null;
+  } else if (has("sell") && has("gp")){
+    sell = v.sell; gp = v.gp;
+    if (gp >= 100) return showProblem("GP% must be below 100.");
     cost = sell * (1 - gp / 100);
-    gpRands = sell - cost;
-  } else if (has('sell') && has('rands')) {
-    sell = values.sell;
-    gpRands = values.rands;
-    cost = sell - gpRands;
-    gp = sell ? gpRands / sell * 100 : null;
-  } else if (has('gp') && has('rands')) {
-    gp = values.gp;
-    gpRands = values.rands;
-    if (gp <= 0) return showProblem('GP% must be above 0 for this calculation.');
-    sell = gpRands / (gp / 100);
-    cost = sell - gpRands;
+    rands = sell - cost;
+  } else if (has("sell") && has("rands")){
+    sell = v.sell; rands = v.rands;
+    cost = sell - rands;
+    gp = sell ? rands / sell * 100 : null;
+  } else if (has("gp") && has("rands")){
+    gp = v.gp; rands = v.rands;
+    if (gp <= 0) return showProblem("GP% must be above 0.");
+    sell = rands / (gp / 100);
+    cost = sell - rands;
   }
 
-  if (![cost, sell, gp, gpRands].every(Number.isFinite)) return showProblem('Check the entered values.');
-  if (cost < 0 || sell < 0) return showProblem('Calculation creates a negative value.');
+  if (![cost, sell, gp, rands].every(Number.isFinite)) return showProblem("Check values.");
+  if (cost < 0 || sell < 0) return showProblem("Negative value created.");
 
-  if (!costLocked && !has('cost')) setField('cost', displayValue('cost', cost));
-  if (!has('sell')) setField('sell', displayValue('sell', sell));
-  if (!has('gp')) setField('gp', gp);
-  if (!has('rands')) setField('rands', gpRands);
+  if (!costLocked && !has("cost")) setValue("cost", exclToDisplay("cost", cost));
+  if (!has("sell")) setValue("sell", exclToDisplay("sell", sell));
+  if (!has("gp")) setValue("gp", gp);
+  if (!has("rands")) setValue("rands", rands);
 
-  const markup = cost ? gpRands / cost * 100 : null;
-  $('markupText').textContent = Number.isFinite(markup) ? `Markup: ${fmt(markup)}%` : 'Markup: N/C';
-  $('statusText').textContent = costLocked ? `Cost locked. Using Cost Price + ${label(pair[1])}` : `Using ${label(pair[0])} + ${label(pair[1])}`;
+  const markup = cost ? rands / cost * 100 : null;
+  $("markupText").textContent = Number.isFinite(markup) ? "Markup: " + fmt(markup) + "%" : "Markup: N/C";
+  $("statusText").textContent = costLocked ? "Cost locked. Using Cost + " + label(pair[1]) : "Active Field: " + label(activeField);
 }
 
-function showProblem(message) {
-  $('statusText').textContent = message;
-}
-
-function renderDeptButton() {
-  deptBtn.textContent = selectedDept ? selectedDept.name : 'Dept';
-  deptBtn.classList.toggle('dept-active', Boolean(selectedDept));
-}
-
-Object.entries(fields).forEach(([name, input]) => {
-  input.addEventListener('input', () => {
-    if (suppress) return;
-    if (name === 'gp' && selectedDept) {
-      selectedDept = null;
-      renderDeptButton();
-    }
-    if (costLocked && name === 'cost') {
-      const currentCost = readCostExclFromField();
-      if (Number.isFinite(currentCost)) {
-        lockedCostValue = currentCost;
-        $('statusText').textContent = 'Cost locked. Cost Price updated manually.';
-      } else {
-        $('statusText').textContent = 'Enter a Cost Price value.';
-      }
-      return;
-    }
-    touch(name);
-    compute();
-  });
-});
-
-[costVatBtn, sellVatBtn].forEach((btn) => {
-  btn.addEventListener('click', () => {
-    btn.classList.toggle('active');
-    btn.textContent = btn.classList.contains('active') ? 'VAT ✓' : 'VAT';
-    if (costLocked && btn === costVatBtn && Number.isFinite(lockedCostValue)) {
-      setField('cost', displayValue('cost', lockedCostValue));
-    }
-    compute();
-  });
-});
-
-$('calculateBtn').addEventListener('click', compute);
-
-if (costLockBtn) {
-  costLockBtn.addEventListener('click', () => {
-    const changed = setCostLockState(!costLocked);
-    if (changed) compute();
-  });
-}
-renderCostLock();
-$('clearBtn').addEventListener('click', () => {
-  Object.entries(fields).forEach(([name, field]) => {
-    if (costLocked && name === 'cost') return;
-    field.value = '';
-  });
-  lastManual = [];
-  selectedDept = null;
-  renderDeptButton();
-  $('markupText').textContent = 'Markup: N/C';
-  $('statusText').textContent = costLocked ? 'Cost locked. Enter GP %, GP Rands or Sell Price.' : 'Enter any two values.';
-});
-
-deptBtn.addEventListener('click', () => {
-  renderDeptChoices();
-  $('deptDialog').showModal();
-});
-
-function renderDeptChoices() {
-  const box = $('deptChoices');
-  box.innerHTML = '';
-  if (!settings.departments.length) {
-    box.innerHTML = '<div class="empty">No departments saved.</div>';
+function appendKey(k){
+  let cur = values[activeField] || "";
+  if (replaceOnNextKey) {
+    cur = "";
+    replaceOnNextKey = false;
+  }
+  if (cur === "0.00" || cur === "0") cur = "";
+  if (k === "." && cur.includes(".")) return;
+  if (cur.length > 12) return;
+  setRaw(activeField, cur + k);
+  if (activeField === "gp" && selectedDept){
+    selectedDept = null;
+    renderToggles();
+  }
+  if (costLocked && activeField === "cost"){
+    const c = displayToExcl("cost");
+    if (Number.isFinite(c)) lockedCostExcl = c;
+    $("statusText").textContent = "Cost locked. Cost updated.";
     return;
   }
-  settings.departments.forEach((department) => {
-    const row = document.createElement('button');
-    row.className = 'choice-row';
-    row.innerHTML = `<strong>${escapeHtml(department.name)}</strong><span>${fmt(department.gp)}%</span>`;
-    row.addEventListener('click', () => {
-      selectedDept = { ...department };
-      renderDeptButton();
-      setField('gp', department.gp);
-      touch('gp');
-      $('deptDialog').close();
+  touch(activeField);
+  compute();
+}
+function backspace(){
+  replaceOnNextKey = false;
+  const cur = values[activeField] || "";
+  setRaw(activeField, cur.slice(0, -1));
+  if (costLocked && activeField === "cost"){
+    const c = displayToExcl("cost");
+    if (Number.isFinite(c)) lockedCostExcl = c;
+    return;
+  }
+  touch(activeField);
+  compute();
+}
+function clearField(){
+  Object.keys(values).forEach(field => {
+    if (costLocked && field === "cost") return;
+    setRaw(field, "");
+  });
+  if (!costLocked) lockedCostExcl = null;
+  selectedDept = null;
+  lastManual = [];
+  replaceOnNextKey = true;
+  renderToggles();
+  $("markupText").textContent = "Markup: N/C";
+  $("statusText").textContent = costLocked ? "Cost locked. Other fields cleared." : "All fields cleared.";
+}
+function signToggle(){
+  const cur = values[activeField] || "";
+  setRaw(activeField, cur.startsWith("-") ? cur.slice(1) : "-" + cur);
+  touch(activeField);
+  compute();
+}
+function enter(){
+  replaceOnNextKey = true;
+  const n = num(values[activeField]);
+  if (n !== null) setRaw(activeField, fmt(n));
+  touch(activeField);
+  compute();
+}
+
+document.querySelectorAll(".calc-row").forEach(row => {
+  row.addEventListener("click", e => {
+    const target = e.target;
+    const field = row.dataset.field;
+    if (target.id === "costVatBtn"){
+      costVat = !costVat;
+      if (costLocked && Number.isFinite(lockedCostExcl)) setValue("cost", exclToDisplay("cost", lockedCostExcl));
+      renderToggles(); compute(); return;
+    }
+    if (target.id === "sellVatBtn"){
+      sellVat = !sellVat; renderToggles(); compute(); return;
+    }
+    if (target.id === "costLockBtn"){
+      if (!costLocked){
+        const c = displayToExcl("cost");
+        if (!Number.isFinite(c)) return showProblem("Enter Cost before locking.");
+        lockedCostExcl = c;
+        costLocked = true;
+      } else {
+        costLocked = false;
+        lockedCostExcl = null;
+      }
+      renderToggles(); compute(); return;
+    }
+    if (target.id === "deptBtn"){
+      renderDeptChoices();
+      $("deptDialog").showModal();
+      return;
+    }
+    setActive(field);
+    replaceOnNextKey = true;
+  });
+});
+
+document.querySelector(".keypad").addEventListener("click", e => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  if (btn.dataset.key) appendKey(btn.dataset.key);
+  if (btn.dataset.action === "back") backspace();
+  if (btn.dataset.action === "clear-field") clearField();
+  if (btn.dataset.action === "sign") signToggle();
+  if (btn.dataset.action === "enter") enter();
+});
+
+$("settingsBtn").addEventListener("click", () => {
+  $("vatRateInput").value = fmt(settings.vatRate);
+  renderDepartmentList();
+  $("settingsDialog").showModal();
+});
+document.querySelectorAll("[data-close]").forEach(btn => {
+  btn.addEventListener("click", () => $(btn.dataset.close).close());
+});
+
+function renderDeptChoices(){
+  const box = $("deptChoices");
+  box.innerHTML = "";
+  settings.departments.forEach(dept => {
+    const row = document.createElement("button");
+    row.type = "button";
+    row.innerHTML = `<strong>${dept.name}</strong><span>${fmt(dept.gp)}%</span>`;
+    row.addEventListener("click", () => {
+      selectedDept = dept;
+      setActive("gp");
+      setRaw("gp", fmt(dept.gp));
+      touch("gp");
+      renderToggles();
+      $("deptDialog").close();
+      replaceOnNextKey = true;
       compute();
     });
     box.appendChild(row);
   });
 }
-
-$('settingsBtn').addEventListener('click', () => {
-  renderSettings();
-  $('settingsDialog').showModal();
+function renderDepartmentList(){
+  const list = $("departmentList");
+  list.innerHTML = "";
+  settings.departments.forEach((dept, index) => {
+    const row = document.createElement("div");
+    row.className = "dept-row";
+    row.innerHTML = `<span><strong>${dept.name}</strong><br>${fmt(dept.gp)}%</span>
+      <span><button type="button" data-edit="${index}">Edit</button> <button type="button" data-del="${index}">Delete</button></span>`;
+    list.appendChild(row);
+  });
+}
+$("departmentList").addEventListener("click", e => {
+  const edit = e.target.closest("[data-edit]");
+  const del = e.target.closest("[data-del]");
+  if (edit){
+    editingDeptIndex = Number(edit.dataset.edit);
+    const dept = settings.departments[editingDeptIndex];
+    $("deptNameInput").value = dept.name;
+    $("deptGpInput").value = fmt(dept.gp);
+    $("addDeptBtn").textContent = "Update Department";
+  }
+  if (del){
+    settings.departments.splice(Number(del.dataset.del), 1);
+    renderDepartmentList();
+  }
 });
-
-document.querySelectorAll('[data-close]').forEach((button) => {
-  button.addEventListener('click', () => $(button.dataset.close).close());
-});
-
-function renderSettings() {
-  $('vatRateInput').value = fmt(settings.vatRate);
-  $('deptNameInput').value = '';
-  $('deptGpInput').value = '';
-  $('addDeptBtn').textContent = 'Add Department';
-  editingDeptIndex = null;
+$("addDeptBtn").addEventListener("click", () => {
+  const name = $("deptNameInput").value.trim().toUpperCase();
+  const gp = num($("deptGpInput").value);
+  if (!name || !Number.isFinite(gp)) return;
+  if (editingDeptIndex !== null){
+    settings.departments[editingDeptIndex] = { name, gp };
+    editingDeptIndex = null;
+    $("addDeptBtn").textContent = "Add Department";
+  } else {
+    settings.departments.push({ name, gp });
+  }
+  $("deptNameInput").value = "";
+  $("deptGpInput").value = "";
   renderDepartmentList();
-}
-
-function renderDepartmentList() {
-  const box = $('departmentList');
-  box.innerHTML = '';
-  if (!settings.departments.length) {
-    box.innerHTML = '<div class="empty">No departments saved.</div>';
-    return;
-  }
-  settings.departments.forEach((department, index) => {
-    const row = document.createElement('div');
-    row.className = 'dept-row';
-    row.innerHTML = `
-      <div><strong>${escapeHtml(department.name)}</strong><br><span>${fmt(department.gp)}%</span></div>
-      <div class="small-actions">
-        <button data-edit="${index}">Edit</button>
-        <button class="danger" data-del="${index}">Delete</button>
-      </div>`;
-    box.appendChild(row);
-  });
-  box.querySelectorAll('[data-edit]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const index = Number(button.dataset.edit);
-      editingDeptIndex = index;
-      $('deptNameInput').value = settings.departments[index].name;
-      $('deptGpInput').value = fmt(settings.departments[index].gp);
-      $('addDeptBtn').textContent = 'Save Department';
-    });
-  });
-  box.querySelectorAll('[data-del]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const index = Number(button.dataset.del);
-      if (confirm(`Delete ${settings.departments[index].name}?`)) {
-        settings.departments.splice(index, 1);
-        saveSettings();
-        renderDepartmentList();
-      }
-    });
-  });
-}
-
-$('addDeptBtn').addEventListener('click', () => {
-  const name = $('deptNameInput').value.trim();
-  const gp = toNumber($('deptGpInput').value);
-  if (!name || gp === null) {
-    alert('Enter a department name and GP %.');
-    return;
-  }
-  const department = { name, gp };
-  if (editingDeptIndex === null) settings.departments.push(department);
-  else settings.departments[editingDeptIndex] = department;
-  saveSettings();
-  renderSettings();
 });
-
-$('saveSettingsBtn').addEventListener('click', () => {
-  const vat = toNumber($('vatRateInput').value);
-  if (vat === null || vat < 0) {
-    alert('Enter a valid VAT rate.');
-    return;
-  }
-  settings.vatRate = vat;
+$("saveSettingsBtn").addEventListener("click", () => {
+  const vat = num($("vatRateInput").value);
+  if (Number.isFinite(vat)) settings.vatRate = vat;
   saveSettings();
-  $('settingsDialog').close();
+  $("settingsDialog").close();
   compute();
 });
-
-$('exportBtn').addEventListener('click', () => {
-  saveSettings();
-  const data = {
-    app: 'Retail Margin Pro',
-    version: '1.02',
-    exportedAt: new Date().toISOString(),
-    settings
-  };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const link = document.createElement('a');
-  const date = new Date().toISOString().slice(0, 10);
-  link.href = URL.createObjectURL(blob);
-  link.download = `RetailMarginPro_Backup_${date}.json`;
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+$("exportBtn").addEventListener("click", () => {
+  const payload = { app:"Retail Margin Pro", version:APP_VERSION, vatRate:settings.vatRate, departments:settings.departments };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `RetailMarginPro_Backup_${APP_VERSION}_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
 });
-
-$('importBtn').addEventListener('click', () => $('importFile').click());
-$('importFile').addEventListener('change', async (event) => {
-  const file = event.target.files[0];
+$("importBtn").addEventListener("click", () => $("importFile").click());
+$("importFile").addEventListener("change", async e => {
+  const file = e.target.files[0];
   if (!file) return;
-  try {
+  try{
     const data = JSON.parse(await file.text());
-    const imported = data.settings || data;
-    if (typeof imported.vatRate !== 'number' || !Array.isArray(imported.departments)) throw new Error('Invalid file');
-    if (!confirm('Import settings? This will replace VAT rate and all departments.')) return;
-    settings = {
-      vatRate: imported.vatRate,
-      departments: imported.departments
-        .map((department) => ({ name: String(department.name || '').trim(), gp: Number(department.gp) }))
-        .filter((department) => department.name && Number.isFinite(department.gp))
-    };
+    if (typeof data.vatRate === "number") settings.vatRate = data.vatRate;
+    if (Array.isArray(data.departments)) settings.departments = data.departments;
     saveSettings();
-    renderSettings();
-    alert('Settings restored successfully.');
-  } catch {
-    alert('Could not import that settings file.');
-  } finally {
-    event.target.value = '';
+    renderDepartmentList();
+  }catch{
+    alert("Could not import settings.");
   }
 });
 
-function escapeHtml(text) {
-  return String(text).replace(/[&<>"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[char]));
-}
-
-renderDeptButton();
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
-}
+setActive("cost");
+renderToggles();

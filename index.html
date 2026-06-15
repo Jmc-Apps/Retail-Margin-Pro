@@ -2,60 +2,76 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#101722">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Retail Margin Pro">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#101826">
   <title>Retail Margin Pro</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="app-shell">
-    <header class="topbar">
+    <header class="app-header">
       <img src="assets/title-logo.png" class="title-logo" alt="Retail Margin Pro">
       <button id="settingsBtn" class="icon-btn" aria-label="Settings">⚙</button>
     </header>
 
-    <main class="card calculator-card">
-      <section class="field-block">
-        <div class="label-row"><label for="costInput">Cost Price</label><button type="button" id="costLockBtn" class="pill lock-toggle" aria-label="Lock Cost Price" title="Lock Cost Price">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M7 10V8a5 5 0 0 1 10 0v2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
-            <rect x="5" y="10" width="14" height="10" rx="2.2" fill="none" stroke="currentColor" stroke-width="2.2"/>
-            <circle cx="12" cy="15" r="1.3" fill="currentColor"/>
-          </svg>
-        </button>
-        <button id="costVatBtn" class="pill" type="button">VAT</button></div>
-        <input id="costInput" inputmode="decimal" type="text" autocomplete="off" placeholder="0.00">
+    <main class="calc-panel">
+      <button class="calc-row active" type="button" data-field="cost">
+        <span class="row-label">Cost</span>
+        <span id="costDisplay" class="row-value">0.00</span>
+        <span class="row-actions">
+          <span id="costLockBtn" class="mini-icon" aria-label="Lock Cost Price">🔓</span>
+          <span id="costVatBtn" class="mini-pill">VAT</span>
+        </span>
+      </button>
+
+      <button class="calc-row" type="button" data-field="gp">
+        <span class="row-label">GP%</span>
+        <span id="gpDisplay" class="row-value">0.00</span>
+        <span class="row-actions">
+          <span id="deptBtn" class="mini-pill">Dept</span>
+        </span>
+      </button>
+
+      <button class="calc-row" type="button" data-field="sell">
+        <span class="row-label">Sell</span>
+        <span id="sellDisplay" class="row-value">0.00</span>
+        <span class="row-actions">
+          <span id="sellVatBtn" class="mini-pill">VAT</span>
+        </span>
+      </button>
+
+      <button class="calc-row" type="button" data-field="rands">
+        <span class="row-label">GP R</span>
+        <span id="randsDisplay" class="row-value">0.00</span>
+        <span class="row-actions"></span>
+      </button>
+
+      <section class="info-strip">
+        <div id="markupText">Markup: N/C</div>
+        <div id="statusText">Active Field: Cost</div>
       </section>
-
-      <section class="field-block">
-        <div class="label-row"><label for="gpInput">GP %</label><button id="deptBtn" class="pill" type="button">Dept</button></div>
-        <input id="gpInput" inputmode="decimal" type="text" autocomplete="off" placeholder="0.00">
-      </section>
-
-      <section class="field-block">
-        <div class="label-row"><label for="gpRandInput">GP Rands</label></div>
-        <input id="gpRandInput" inputmode="decimal" type="text" autocomplete="off" placeholder="0.00">
-      </section>
-
-      <section class="field-block">
-        <div class="label-row"><label for="sellInput">Sell Price</label><button id="sellVatBtn" class="pill" type="button">VAT</button></div>
-        <input id="sellInput" inputmode="decimal" type="text" autocomplete="off" placeholder="0.00">
-      </section>
-
-      <div id="markupText" class="markup">Markup: N/C</div>
-      <div id="statusText" class="status">Enter any two values.</div>
-
-      <div class="actions">
-        <button id="calculateBtn" class="primary" type="button">Calculate</button>
-        <button id="clearBtn" type="button">Clear</button>
-      </div>
     </main>
+
+    <section class="keypad" aria-label="Number keypad">
+      <button data-key="7">7</button>
+      <button data-key="8">8</button>
+      <button data-key="9">9</button>
+      <button data-action="back">⌫</button>
+      <button data-key="4">4</button>
+      <button data-key="5">5</button>
+      <button data-key="6">6</button>
+      <button data-action="sign">±</button>
+      <button data-key="1">1</button>
+      <button data-key="2">2</button>
+      <button data-key="3">3</button>
+      <button data-action="clear-field">C</button>
+      <button data-key="0" class="zero">0</button>
+      <button data-key=".">.</button>
+      <button data-action="enter">ENTER</button>
+    </section>
   </div>
 
   <dialog id="deptDialog" class="modal">
@@ -66,41 +82,39 @@
   <dialog id="settingsDialog" class="modal settings-modal">
     <div class="modal-head"><h2>Settings</h2><button class="close" data-close="settingsDialog">×</button></div>
     <div class="settings-scroll">
-    <section class="setting-section">
-      <label for="vatRateInput">VAT Rate %</label>
-      <input id="vatRateInput" inputmode="decimal" type="text" placeholder="15.00">
-    </section>
+      <section class="setting-section">
+        <label for="vatRateInput">VAT Rate %</label>
+        <input id="vatRateInput" inputmode="decimal" type="text" placeholder="15.00">
+      </section>
 
-    <section class="setting-section">
-      <h3>Departments</h3>
-      <div id="departmentList" class="list"></div>
-      <div class="dept-editor">
-        <input id="deptNameInput" type="text" placeholder="Department name">
-        <input id="deptGpInput" inputmode="decimal" type="text" placeholder="GP %">
-        <button id="addDeptBtn" class="primary" type="button">Add Department</button>
-      </div>
-    </section>
+      <section class="setting-section">
+        <h3>Departments</h3>
+        <div id="departmentList" class="list"></div>
+        <div class="dept-editor">
+          <input id="deptNameInput" type="text" placeholder="Department name">
+          <input id="deptGpInput" inputmode="decimal" type="text" placeholder="GP %">
+          <button id="addDeptBtn" class="primary" type="button">Add Department</button>
+        </div>
+      </section>
 
-    <section class="setting-section">
-      <h3>Backup & Restore</h3>
-      <div class="actions stacked">
-        <button id="exportBtn" type="button">Export Settings</button>
-        <button id="importBtn" type="button">Import Settings</button>
-        <input id="importFile" type="file" accept="application/json,.json" hidden>
-      </div>
-    </section>
+      <section class="setting-section">
+        <h3>Backup & Restore</h3>
+        <div class="actions stacked">
+          <button id="exportBtn" type="button">Export Settings</button>
+          <button id="importBtn" type="button">Import Settings</button>
+          <input id="importFile" type="file" accept="application/json,.json" hidden>
+        </div>
+      </section>
 
+      <section class="setting-section version-info">
+        <h3>Version Information</h3>
+        <div class="version-card">
+          <strong>Retail Margin Pro</strong>
+          <span>Version: v2.02</span>
+        </div>
+      </section>
 
-    <section class="setting-section version-info">
-      <h3>Version Information</h3>
-      <div class="version-card">
-        <strong>Retail Margin Pro</strong>
-        <span>Version: v1.20</span>
-        <span>Build Date: 2026-06-15</span>
-      </div>
-    </section>
-
-    <button id="saveSettingsBtn" class="primary full" type="button">Save Settings</button>
+      <button id="saveSettingsBtn" class="primary full" type="button">Save Settings</button>
     </div>
   </dialog>
 

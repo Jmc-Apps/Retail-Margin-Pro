@@ -3,8 +3,8 @@
   "short_name": "RMP",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#101722",
-  "theme_color": "#101722",
+  "background_color": "#eef2f7",
+  "theme_color": "#101826",
   "orientation": "portrait",
   "icons": [
     {
@@ -32,5 +32,5 @@
       "purpose": "any"
     }
   ],
-  "version": "1.20"
+  "version": "2.02"
 }
