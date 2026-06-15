@@ -8,8 +8,8 @@ const defaults = {
     { name: "CHICKEN", gp: 20 },
     { name: "FRESH PRODUCE", gp: 36 },
     { name: "HMR", gp: 45 },
-    { name: "BREAD BOUGHT IN", gp: 10 },
-    { name: "BREAD", gp: 25 },
+    { name: "BREAD BOUGHT IN", gp: 15 },
+    { name: "BREAD", gp: 30 },
     { name: "CONFECTIONARY BOUGHT IN", gp: 36 },
     { name: "CONFECTIONARY", gp: 55 },
     { name: "GROCERIES", gp: 24 },
@@ -214,8 +214,14 @@ Object.entries(fields).forEach(([name, input]) => {
   input.addEventListener('input', () => {
     if (suppress) return;
     if (costLocked && name === 'cost') {
-      setField('cost', displayValue('cost', lockedCost));
-      compute();
+      const value = readManual('cost');
+      if (Number.isFinite(value)) {
+        lockedCost = value;
+        localStorage.setItem('rmpLockedCost', String(lockedCost));
+      }
+      $('statusText').textContent = Number.isFinite(lockedCost)
+        ? 'Cost locked. Cost Price updated manually.'
+        : 'Lock needs a Cost Price value.';
       return;
     }
     if (name === 'gp' && selectedDept) {
@@ -428,7 +434,7 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
 
-/* v1.14-cost-lock */
+/* v1.15-cost-lock */
 (function(){
   function n(v){v=parseFloat(String(v||'').replace(',','.'));return isFinite(v)?v:null}
   function sv(el,v){if(el&&isFinite(v))el.value=(Math.round(v*100)/100).toFixed(2)}
