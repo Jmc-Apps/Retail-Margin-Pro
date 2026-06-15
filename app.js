@@ -4,21 +4,21 @@ const KEY = 'retailMarginPro.v1.settings';
 const defaults = {
   vatRate: 15,
   departments: [
+    { name: "BUTCHERY MEAT", gp: 32 },
+    { name: "CHICKEN", gp: 20 },
+    { name: "FRESH PRODUCE", gp: 36 },
+    { name: "HMR", gp: 45 },
+    { name: "BREAD BOUGHT IN", gp: 10 },
+    { name: "BREAD", gp: 25 },
+    { name: "CONFECTIONARY BOUGHT IN", gp: 36 },
+    { name: "CONFECTIONARY", gp: 55 },
     { name: "GROCERIES", gp: 24 },
     { name: "HEALTH & BEAUTY", gp: 22 },
     { name: "NON FOODS", gp: 24 },
     { name: "PERISHABLES", gp: 22 },
     { name: "EGGS", gp: 24 },
     { name: "FROZENS", gp: 22 },
-    { name: "GIFTS", gp: 24 },
-    { name: "BREAD BOUGHT IN", gp: 10 },
-    { name: "BREAD", gp: 25 },
-    { name: "CONFECTIONARY BOUGHT IN", gp: 36 },
-    { name: "CONFECTIONARY", gp: 55 },
-    { name: "BUTCHERY MEAT", gp: 32 },
-    { name: "CHICKEN", gp: 20 },
-    { name: "FRESH PRODUCE", gp: 36 },
-    { name: "HMR", gp: 45 }
+    { name: "GIFTS", gp: 24 }
   ]
 };
 
@@ -428,7 +428,7 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
 
-/* v1.11-cost-lock */
+/* v1.12-cost-lock */
 (function(){
   function n(v){v=parseFloat(String(v||'').replace(',','.'));return isFinite(v)?v:null}
   function sv(el,v){if(el&&isFinite(v))el.value=(Math.round(v*100)/100).toFixed(2)}
