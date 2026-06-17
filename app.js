@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "v2.15";
+const APP_VERSION = "v2.16";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
@@ -500,7 +500,7 @@ renderToggles();
 
 
 
-// v2.15 force reload from server
+// v2.16 force reload from server
 const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
 const updateStatus = document.getElementById("updateStatus");
 
@@ -555,7 +555,7 @@ if (checkUpdatesBtn) {
 
 
 
-// v2.15 landscape layout fallback for iOS PWA rotation behavior
+// v2.16 landscape layout fallback for iOS PWA rotation behavior
 function updateLandscapeLayoutClass() {
   const isLandscape = window.innerWidth > window.innerHeight && window.innerWidth >= 640;
   document.body.classList.toggle("is-landscape-layout", isLandscape);
