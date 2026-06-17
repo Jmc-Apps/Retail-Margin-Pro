@@ -214,7 +214,7 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
   .keypad button{border-radius:15px;font-size:1.25rem}
 }
 
-/* v2.16 one-screen no-scroll calculator layout */
+/* v2.17 one-screen no-scroll calculator layout */
 html,
 body {
   width: 100%;
@@ -369,7 +369,7 @@ dialog,
   }
 }
 
-/* v2.16 manual update controls */
+/* v2.17 manual update controls */
 .update-card {
   display: grid;
   gap: 8px;
@@ -390,7 +390,7 @@ dialog,
   font-size: 0.9rem;
 }
 
-/* v2.16 Image 2 inspired UI refresh */
+/* v2.17 Image 2 inspired UI refresh */
 body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 100%)!important}
 .app-shell{background:linear-gradient(180deg,#07111f 0%,#0b1220 100%)!important;gap:7px!important}
 .app-header{background:linear-gradient(180deg,#061b45 0%,#07111f 100%)!important;border:1px solid rgba(96,165,250,.18);box-shadow:0 8px 24px rgba(0,0,0,.45)}
@@ -427,7 +427,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
 .keypad .equals{background:linear-gradient(180deg,#22c55e,#15803d)!important;font-size:1.8rem!important}
 @media(max-height:700px){.calc-row{grid-template-columns:38px 72px 1fr auto!important}.field-icon{width:32px;height:32px;border-radius:11px;font-size:.9rem}.gp-icon{font-size:1.2rem}.row-label{font-size:.78rem!important}.row-value{font-size:clamp(1.2rem,6.3vw,1.9rem)!important}.keypad button{font-size:1.05rem!important}.keypad .op-key{font-size:1.25rem!important}}
 
-/* v2.16 fixed keypad button placement */
+/* v2.17 fixed keypad button placement */
 .keypad {
   grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
   grid-auto-rows: auto;
@@ -461,7 +461,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   min-width: 0;
 }
 
-/* v2.16 GP department overflow fix */
+/* v2.17 GP department overflow fix */
 .calc-row {
   min-width: 0;
 }
@@ -505,7 +505,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.16 portrait mode lock */
+/* v2.17 portrait mode lock */
 .portrait-lock-notice {
   display: none;
 }
@@ -549,7 +549,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.16 landscape remains functional with portrait-style centered panel */
+/* v2.17 landscape remains functional with portrait-style centered panel */
 .portrait-lock-notice {
   display: none !important;
 }
@@ -581,7 +581,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.16 stronger department button shortening */
+/* v2.17 stronger department button shortening */
 .row-gp {
   grid-template-columns: 42px 54px minmax(96px, 1fr) minmax(52px, auto) !important;
 }
@@ -621,7 +621,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.16 GP department name under value */
+/* v2.17 GP department name under value */
 .row-gp {
   grid-template-columns: 42px 54px minmax(108px, 1fr) minmax(52px, auto) !important;
 }
@@ -695,7 +695,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.16 portrait-primary request + landscape fallback panel */
+/* v2.17 portrait-primary request + landscape fallback panel */
 .portrait-lock-notice {
   display: none !important;
 }
@@ -796,7 +796,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.16 block order/value alignment */
+/* v2.17 block order/value alignment */
 .calc-row {
   grid-template-columns: 42px 60px minmax(0, 1fr) 66px !important;
   column-gap: 8px !important;
@@ -882,7 +882,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.16 landscape-only split layout: cards left, keypad right. Portrait layout is unchanged. */
+/* v2.17 landscape-only split layout: cards left, keypad right. Portrait layout is unchanged. */
 @media screen and (orientation: landscape) {
   html,
   body {
@@ -1069,7 +1069,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.16 fixes */
+/* v2.17 fixes */
 
 /* GP value alignment: all number values use the same right edge. */
 .calc-row {
@@ -1310,7 +1310,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.16 cost value / lock button spacing fix */
+/* v2.17 cost value / lock button spacing fix */
 
 /* Give rows with two action buttons enough reserved space so the numeric value does not slide under them. */
 .calc-row[data-field="cost"],
@@ -1393,5 +1393,140 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   .calc-row[data-field="sell"] .row-value {
     min-width: clamp(78px, 11vw, 118px) !important;
     padding-right: 4px !important;
+  }
+}
+
+/* v2.17 hard fix: prevent Cost lock/VAT buttons from covering the Cost value */
+
+/* Use a wider, fixed action column for Cost so both buttons live fully to the right of the value. */
+.calc-row[data-field="cost"] {
+  grid-template-columns: 42px 56px minmax(0, 1fr) 138px !important;
+}
+
+.calc-row[data-field="cost"] .row-value {
+  justify-self: end !important;
+  align-self: center !important;
+  text-align: right !important;
+  min-width: 0 !important;
+  max-width: calc(100% - 8px) !important;
+  width: auto !important;
+  padding-right: 10px !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.calc-row[data-field="cost"] .row-actions {
+  position: static !important;
+  z-index: 2 !important;
+  grid-column: 4 / 5 !important;
+  justify-self: end !important;
+  align-self: center !important;
+  width: 138px !important;
+  min-width: 138px !important;
+  max-width: 138px !important;
+  display: grid !important;
+  grid-template-columns: 54px 62px !important;
+  gap: 8px !important;
+  justify-content: end !important;
+  align-items: center !important;
+  pointer-events: auto !important;
+}
+
+.calc-row[data-field="cost"] .mini-btn {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: 42px !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Sell only has VAT, so keep it aligned but do not use the Cost two-button width. */
+.calc-row[data-field="sell"] {
+  grid-template-columns: 42px 56px minmax(0, 1fr) 76px !important;
+}
+
+.calc-row[data-field="sell"] .row-actions {
+  width: 76px !important;
+  min-width: 76px !important;
+  max-width: 76px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+}
+
+/* Make Cost value a little smaller on narrow iPhones so 000000.00 still has room. */
+@media (max-width: 430px) {
+  .calc-row[data-field="cost"] {
+    grid-template-columns: 36px 50px minmax(0, 1fr) 130px !important;
+    column-gap: 6px !important;
+  }
+
+  .calc-row[data-field="cost"] .row-actions {
+    width: 130px !important;
+    min-width: 130px !important;
+    max-width: 130px !important;
+    grid-template-columns: 50px 58px !important;
+    gap: 7px !important;
+  }
+
+  .calc-row[data-field="cost"] .row-value {
+    font-size: clamp(1.75rem, 9vw, 2.55rem) !important;
+    padding-right: 8px !important;
+  }
+
+  .calc-row[data-field="cost"] .mini-btn {
+    height: 40px !important;
+  }
+
+  .calc-row[data-field="sell"] {
+    grid-template-columns: 36px 50px minmax(0, 1fr) 70px !important;
+  }
+
+  .calc-row[data-field="sell"] .row-actions {
+    width: 70px !important;
+    min-width: 70px !important;
+    max-width: 70px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .calc-row[data-field="cost"] {
+    grid-template-columns: 34px 46px minmax(0, 1fr) 124px !important;
+    column-gap: 5px !important;
+  }
+
+  .calc-row[data-field="cost"] .row-actions {
+    width: 124px !important;
+    min-width: 124px !important;
+    max-width: 124px !important;
+    grid-template-columns: 48px 56px !important;
+    gap: 6px !important;
+  }
+
+  .calc-row[data-field="cost"] .row-value {
+    font-size: clamp(1.65rem, 8.6vw, 2.35rem) !important;
+    padding-right: 6px !important;
+  }
+}
+
+/* Landscape keeps split layout but also reserves the full cost action column. */
+@media screen and (orientation: landscape), screen and (max-height: 520px) and (min-width: 640px) {
+  .calc-row[data-field="cost"] {
+    grid-template-columns: clamp(30px, 6.2dvh, 42px) clamp(58px, 8vw, 88px) minmax(0, 1fr) clamp(118px, 16vw, 146px) !important;
+  }
+
+  .calc-row[data-field="cost"] .row-actions {
+    width: clamp(118px, 16vw, 146px) !important;
+    min-width: clamp(118px, 16vw, 146px) !important;
+    max-width: clamp(118px, 16vw, 146px) !important;
+    grid-template-columns: minmax(48px, 56px) minmax(56px, 66px) !important;
+    gap: clamp(5px, .8vw, 9px) !important;
+  }
+
+  .calc-row[data-field="cost"] .row-value {
+    font-size: clamp(1.25rem, 5.6dvh, 2.1rem) !important;
+    padding-right: 8px !important;
   }
 }
