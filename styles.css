@@ -214,7 +214,7 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
   .keypad button{border-radius:15px;font-size:1.25rem}
 }
 
-/* v2.11 one-screen no-scroll calculator layout */
+/* v2.12 one-screen no-scroll calculator layout */
 html,
 body {
   width: 100%;
@@ -369,7 +369,7 @@ dialog,
   }
 }
 
-/* v2.11 manual update controls */
+/* v2.12 manual update controls */
 .update-card {
   display: grid;
   gap: 8px;
@@ -390,7 +390,7 @@ dialog,
   font-size: 0.9rem;
 }
 
-/* v2.11 Image 2 inspired UI refresh */
+/* v2.12 Image 2 inspired UI refresh */
 body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 100%)!important}
 .app-shell{background:linear-gradient(180deg,#07111f 0%,#0b1220 100%)!important;gap:7px!important}
 .app-header{background:linear-gradient(180deg,#061b45 0%,#07111f 100%)!important;border:1px solid rgba(96,165,250,.18);box-shadow:0 8px 24px rgba(0,0,0,.45)}
@@ -427,7 +427,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
 .keypad .equals{background:linear-gradient(180deg,#22c55e,#15803d)!important;font-size:1.8rem!important}
 @media(max-height:700px){.calc-row{grid-template-columns:38px 72px 1fr auto!important}.field-icon{width:32px;height:32px;border-radius:11px;font-size:.9rem}.gp-icon{font-size:1.2rem}.row-label{font-size:.78rem!important}.row-value{font-size:clamp(1.2rem,6.3vw,1.9rem)!important}.keypad button{font-size:1.05rem!important}.keypad .op-key{font-size:1.25rem!important}}
 
-/* v2.11 fixed keypad button placement */
+/* v2.12 fixed keypad button placement */
 .keypad {
   grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
   grid-auto-rows: auto;
@@ -461,7 +461,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   min-width: 0;
 }
 
-/* v2.11 GP department overflow fix */
+/* v2.12 GP department overflow fix */
 .calc-row {
   min-width: 0;
 }
@@ -505,7 +505,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.11 portrait mode lock */
+/* v2.12 portrait mode lock */
 .portrait-lock-notice {
   display: none;
 }
@@ -549,7 +549,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.11 landscape remains functional with portrait-style centered panel */
+/* v2.12 landscape remains functional with portrait-style centered panel */
 .portrait-lock-notice {
   display: none !important;
 }
@@ -581,7 +581,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.11 stronger department button shortening */
+/* v2.12 stronger department button shortening */
 .row-gp {
   grid-template-columns: 42px 54px minmax(96px, 1fr) minmax(52px, auto) !important;
 }
@@ -621,7 +621,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.11 GP department name under value */
+/* v2.12 GP department name under value */
 .row-gp {
   grid-template-columns: 42px 54px minmax(108px, 1fr) minmax(52px, auto) !important;
 }
@@ -692,5 +692,106 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   .gp-dept-name {
     font-size: 0.46rem !important;
     margin-top: 1px;
+  }
+}
+
+/* v2.12 portrait-primary request + landscape fallback panel */
+.portrait-lock-notice {
+  display: none !important;
+}
+
+/* iOS may ignore PWA orientation lock. If rotated, keep the app as a portrait-style panel. */
+@media screen and (orientation: landscape) {
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden !important;
+    background: radial-gradient(circle at center, #10213a 0%, #020617 72%) !important;
+  }
+
+  body::before {
+    content: none !important;
+    display: none !important;
+  }
+
+  .app-shell {
+    width: min(430px, 100vw) !important;
+    max-width: 430px !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    max-height: 100dvh !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    overflow: hidden !important;
+    box-shadow: 0 0 44px rgba(0, 0, 0, .52);
+    border-left: 1px solid rgba(255,255,255,.08);
+    border-right: 1px solid rgba(255,255,255,.08);
+  }
+
+  .app-header {
+    height: clamp(44px, 10dvh, 58px) !important;
+  }
+
+  .title-logo {
+    max-height: 34px !important;
+  }
+
+  .calc-panel {
+    min-height: 0 !important;
+    overflow: hidden !important;
+    gap: 5px !important;
+  }
+
+  .calc-row {
+    min-height: 42px !important;
+    max-height: 58px !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+  }
+
+  .field-icon {
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 10px !important;
+    font-size: .85rem !important;
+  }
+
+  .row-label {
+    font-size: .72rem !important;
+  }
+
+  .row-value {
+    font-size: clamp(1.08rem, 4.8vw, 1.65rem) !important;
+  }
+
+  .gp-dept-name {
+    font-size: .45rem !important;
+  }
+
+  .info-strip {
+    min-height: 34px !important;
+    font-size: .74rem !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+  }
+
+  .keypad {
+    gap: 4px !important;
+    padding-top: 5px !important;
+  }
+
+  .keypad button {
+    height: clamp(34px, 10dvh, 50px) !important;
+    border-radius: 11px !important;
+    font-size: 1rem !important;
+  }
+
+  .keypad .op-key {
+    font-size: 1.15rem !important;
+  }
+
+  .keypad .equals {
+    font-size: 1.25rem !important;
   }
 }
