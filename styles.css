@@ -214,7 +214,7 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
   .keypad button{border-radius:15px;font-size:1.25rem}
 }
 
-/* v2.18 one-screen no-scroll calculator layout */
+/* v2.19 one-screen no-scroll calculator layout */
 html,
 body {
   width: 100%;
@@ -369,7 +369,7 @@ dialog,
   }
 }
 
-/* v2.18 manual update controls */
+/* v2.19 manual update controls */
 .update-card {
   display: grid;
   gap: 8px;
@@ -390,7 +390,7 @@ dialog,
   font-size: 0.9rem;
 }
 
-/* v2.18 Image 2 inspired UI refresh */
+/* v2.19 Image 2 inspired UI refresh */
 body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 100%)!important}
 .app-shell{background:linear-gradient(180deg,#07111f 0%,#0b1220 100%)!important;gap:7px!important}
 .app-header{background:linear-gradient(180deg,#061b45 0%,#07111f 100%)!important;border:1px solid rgba(96,165,250,.18);box-shadow:0 8px 24px rgba(0,0,0,.45)}
@@ -427,7 +427,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
 .keypad .equals{background:linear-gradient(180deg,#22c55e,#15803d)!important;font-size:1.8rem!important}
 @media(max-height:700px){.calc-row{grid-template-columns:38px 72px 1fr auto!important}.field-icon{width:32px;height:32px;border-radius:11px;font-size:.9rem}.gp-icon{font-size:1.2rem}.row-label{font-size:.78rem!important}.row-value{font-size:clamp(1.2rem,6.3vw,1.9rem)!important}.keypad button{font-size:1.05rem!important}.keypad .op-key{font-size:1.25rem!important}}
 
-/* v2.18 fixed keypad button placement */
+/* v2.19 fixed keypad button placement */
 .keypad {
   grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
   grid-auto-rows: auto;
@@ -461,7 +461,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   min-width: 0;
 }
 
-/* v2.18 GP department overflow fix */
+/* v2.19 GP department overflow fix */
 .calc-row {
   min-width: 0;
 }
@@ -505,7 +505,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.18 portrait mode lock */
+/* v2.19 portrait mode lock */
 .portrait-lock-notice {
   display: none;
 }
@@ -549,7 +549,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.18 landscape remains functional with portrait-style centered panel */
+/* v2.19 landscape remains functional with portrait-style centered panel */
 .portrait-lock-notice {
   display: none !important;
 }
@@ -581,7 +581,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.18 stronger department button shortening */
+/* v2.19 stronger department button shortening */
 .row-gp {
   grid-template-columns: 42px 54px minmax(96px, 1fr) minmax(52px, auto) !important;
 }
@@ -621,7 +621,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.18 GP department name under value */
+/* v2.19 GP department name under value */
 .row-gp {
   grid-template-columns: 42px 54px minmax(108px, 1fr) minmax(52px, auto) !important;
 }
@@ -695,7 +695,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.18 portrait-primary request + landscape fallback panel */
+/* v2.19 portrait-primary request + landscape fallback panel */
 .portrait-lock-notice {
   display: none !important;
 }
@@ -796,7 +796,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.18 block order/value alignment */
+/* v2.19 block order/value alignment */
 .calc-row {
   grid-template-columns: 42px 60px minmax(0, 1fr) 66px !important;
   column-gap: 8px !important;
@@ -882,7 +882,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.18 landscape-only split layout: cards left, keypad right. Portrait layout is unchanged. */
+/* v2.19 landscape-only split layout: cards left, keypad right. Portrait layout is unchanged. */
 @media screen and (orientation: landscape) {
   html,
   body {
@@ -1069,7 +1069,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.18 fixes */
+/* v2.19 fixes */
 
 /* GP value alignment: all number values use the same right edge. */
 .calc-row {
@@ -1310,7 +1310,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.18 cost value / lock button spacing fix */
+/* v2.19 cost value / lock button spacing fix */
 
 /* Give rows with two action buttons enough reserved space so the numeric value does not slide under them. */
 .calc-row[data-field="cost"],
@@ -1396,7 +1396,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.18 hard fix: prevent Cost lock/VAT buttons from covering the Cost value */
+/* v2.19 hard fix: prevent Cost lock/VAT buttons from covering the Cost value */
 
 /* Use a wider, fixed action column for Cost so both buttons live fully to the right of the value. */
 .calc-row[data-field="cost"] {
@@ -1531,7 +1531,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.18 Cost lock moved to the left icon */
+/* v2.19 Cost lock moved to the left icon */
 
 /* Cost row now only has one right-side VAT action, so the value has proper space. */
 .calc-row[data-field="cost"] {
@@ -1595,6 +1595,107 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
 }
 
 /* Landscape split layout keeps Cost lock on the left icon and VAT on the right. */
+@media screen and (orientation: landscape), screen and (max-height: 520px) and (min-width: 640px) {
+  .calc-row[data-field="cost"] {
+    grid-template-columns: clamp(30px, 6.2dvh, 42px) clamp(58px, 8vw, 88px) minmax(0, 1fr) clamp(64px, 8vw, 82px) !important;
+  }
+
+  .calc-row[data-field="cost"] .row-actions {
+    width: clamp(64px, 8vw, 82px) !important;
+    min-width: clamp(64px, 8vw, 82px) !important;
+    max-width: clamp(64px, 8vw, 82px) !important;
+  }
+
+  .calc-row[data-field="cost"] .row-value {
+    font-size: clamp(1.35rem, 6.6dvh, 2.35rem) !important;
+    min-width: clamp(82px, 13vw, 126px) !important;
+    padding-right: 6px !important;
+  }
+}
+
+/* v2.19 final Cost lock cleanup */
+
+/* The old right-side lock button must never display, even if older cached HTML leaks it in. */
+#costLockBtn {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  opacity: 0 !important;
+}
+
+/* Cost row has only VAT on the right. */
+.calc-row[data-field="cost"] {
+  grid-template-columns: 42px 60px minmax(0, 1fr) 76px !important;
+}
+
+.calc-row[data-field="cost"] .row-actions {
+  width: 76px !important;
+  min-width: 76px !important;
+  max-width: 76px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 0 !important;
+}
+
+.calc-row[data-field="cost"] .row-value {
+  justify-self: end !important;
+  text-align: right !important;
+  min-width: 92px !important;
+  max-width: 100% !important;
+  padding-right: 6px !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+/* The left Cost icon is the only lock indicator and button. */
+.cost-lock-icon {
+  cursor: pointer !important;
+  user-select: none !important;
+  pointer-events: auto !important;
+  background: linear-gradient(145deg, #2563eb, #1d4ed8) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.28),
+    0 9px 18px rgba(37,99,235,.30) !important;
+  transition: background .18s ease, transform .12s ease, box-shadow .18s ease !important;
+}
+
+.cost-lock-icon.locked {
+  background: linear-gradient(145deg, #ef4444, #991b1b) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.28),
+    0 9px 18px rgba(153,27,27,.36) !important;
+}
+
+.cost-lock-icon:active {
+  transform: scale(.96) !important;
+}
+
+@media (max-width: 430px) {
+  .calc-row[data-field="cost"] {
+    grid-template-columns: 36px 50px minmax(0, 1fr) 70px !important;
+  }
+
+  .calc-row[data-field="cost"] .row-actions {
+    width: 70px !important;
+    min-width: 70px !important;
+    max-width: 70px !important;
+  }
+
+  .calc-row[data-field="cost"] .row-value {
+    min-width: 86px !important;
+    font-size: clamp(1.85rem, 10.3vw, 2.75rem) !important;
+    padding-right: 6px !important;
+  }
+}
+
 @media screen and (orientation: landscape), screen and (max-height: 520px) and (min-width: 640px) {
   .calc-row[data-field="cost"] {
     grid-template-columns: clamp(30px, 6.2dvh, 42px) clamp(58px, 8vw, 88px) minmax(0, 1fr) clamp(64px, 8vw, 82px) !important;

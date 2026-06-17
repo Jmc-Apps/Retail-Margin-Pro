@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "v2.18";
+const APP_VERSION = "v2.19";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
@@ -144,12 +144,17 @@ function updateGpDeptName(){
 }
 
 function renderToggles(){
+  const costLockIcon = $("costLockIcon");
+  if (costLockIcon) {
+    costLockIcon.textContent = costLocked ? "🔒" : "🔓";
+    costLockIcon.classList.toggle("locked", costLocked);
+    costLockIcon.title = costLocked ? "Cost locked" : "Cost unlocked";
+    costLockIcon.setAttribute("aria-label", costLocked ? "Cost locked" : "Cost unlocked");
+  }
   $("costVatBtn").classList.toggle("active", costVat);
   $("costVatBtn").textContent = costVat ? "VAT ✓" : "VAT";
   $("sellVatBtn").classList.toggle("active", sellVat);
   $("sellVatBtn").textContent = sellVat ? "VAT ✓" : "VAT";
-  $("costLockBtn").classList.toggle("active", costLocked);
-  $("costLockBtn").textContent = costLocked ? "🔒" : "🔓";
   $("deptBtn").textContent = "Dept";
   $("deptBtn").title = selectedDept ? selectedDept.name : "Select Department";
   updateGpDeptName();
@@ -306,18 +311,7 @@ document.querySelectorAll(".calc-row").forEach(row => {
     if (target.id === "sellVatBtn"){
       sellVat = !sellVat; renderToggles(); compute(); return;
     }
-    if (target.id === "costLockBtn"){
-      if (!costLocked){
-        const c = displayToExcl("cost");
-        if (!Number.isFinite(c)) return showProblem("Enter Cost before locking.");
-        lockedCostExcl = c;
-        costLocked = true;
-      } else {
-        costLocked = false;
-        lockedCostExcl = null;
-      }
-      renderToggles(); compute(); return;
-    }
+
     if (target.id === "deptBtn"){
       renderDeptChoices();
       $("deptDialog").showModal();
@@ -500,7 +494,7 @@ renderToggles();
 
 
 
-// v2.18 force reload from server
+// v2.19 force reload from server
 const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
 const updateStatus = document.getElementById("updateStatus");
 
@@ -555,7 +549,7 @@ if (checkUpdatesBtn) {
 
 
 
-// v2.18 landscape layout fallback for iOS PWA rotation behavior
+// v2.19 landscape layout fallback for iOS PWA rotation behavior
 function updateLandscapeLayoutClass() {
   const isLandscape = window.innerWidth > window.innerHeight && window.innerWidth >= 640;
   document.body.classList.toggle("is-landscape-layout", isLandscape);
@@ -566,10 +560,26 @@ updateLandscapeLayoutClass();
 
 
 
-// v2.18 left Cost icon toggles Cost lock
+
 const costLockIconEl = document.getElementById("costLockIcon");
 if (costLockIconEl) {
   costLockIconEl.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const currentCost = displayToExcl("cost", num(values.cost) || 0);
+    if (!costLocked && isFinite(currentCost)) lockedCostExcl = currentCost;
+    costLocked = !costLocked;
+    if (costLocked) lockedCostExcl = displayToExcl("cost", num(values.cost) || 0);
+    renderToggles();
+    compute();
+  });
+}
+
+
+
+// v2.19 left Cost icon is the only Cost lock button
+const costLockIconElV219 = document.getElementById("costLockIcon");
+if (costLockIconElV219) {
+  costLockIconElV219.addEventListener("click", (event) => {
     event.stopPropagation();
     const currentCost = displayToExcl("cost", num(values.cost) || 0);
     if (!costLocked && isFinite(currentCost)) lockedCostExcl = currentCost;
