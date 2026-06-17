@@ -18,8 +18,8 @@
     </header>
 
     <main class="calc-panel">
-      <button class="calc-row active" type="button" data-field="cost">
-        <span class="row-label">Cost</span>
+      <button class="calc-row row-cost active" type="button" data-field="cost">
+        <span class="field-icon cost-icon">🔒</span><span class="row-label">Cost</span>
         <span id="costDisplay" class="row-value">0.00</span>
         <span class="row-actions">
           <span id="costLockBtn" class="mini-icon" aria-label="Lock Cost Price">🔓</span>
@@ -27,24 +27,24 @@
         </span>
       </button>
 
-      <button class="calc-row" type="button" data-field="gp">
-        <span class="row-label">GP%</span>
+      <button class="calc-row row-gp" type="button" data-field="gp">
+        <span class="field-icon gp-icon">%</span><span class="row-label">GP%</span>
         <span id="gpDisplay" class="row-value">0.00</span>
         <span class="row-actions">
           <span id="deptBtn" class="mini-pill">Dept</span>
         </span>
       </button>
 
-      <button class="calc-row" type="button" data-field="sell">
-        <span class="row-label">Sell</span>
+      <button class="calc-row row-sell" type="button" data-field="sell">
+        <span class="field-icon sell-icon">🏷</span><span class="row-label">Sell</span>
         <span id="sellDisplay" class="row-value">0.00</span>
         <span class="row-actions">
           <span id="sellVatBtn" class="mini-pill">VAT</span>
         </span>
       </button>
 
-      <button class="calc-row" type="button" data-field="rands">
-        <span class="row-label">GP R</span>
+      <button class="calc-row row-rands" type="button" data-field="rands">
+        <span class="field-icon rands-icon">R</span><span class="row-label">GP Rands</span>
         <span id="randsDisplay" class="row-value">0.00</span>
         <span class="row-actions"></span>
       </button>
@@ -56,21 +56,29 @@
     </main>
 
     <section class="keypad" aria-label="Number keypad">
-      <button data-key="7">7</button>
-      <button data-key="8">8</button>
-      <button data-key="9">9</button>
-      <button data-action="back">⌫</button>
-      <button data-key="4">4</button>
-      <button data-key="5">5</button>
-      <button data-key="6">6</button>
-      <button data-action="sign">±</button>
-      <button data-key="1">1</button>
-      <button data-key="2">2</button>
-      <button data-key="3">3</button>
-      <button data-action="clear-field">C</button>
-      <button data-key="0" class="zero">0</button>
-      <button data-key=".">.</button>
-      <button data-action="enter">ENTER</button>
+      <button data-key="7" class="key-7">7</button>
+      <button data-key="8" class="key-8">8</button>
+      <button data-key="9" class="key-9">9</button>
+      <button data-action="back" class="danger-key key-back">⌫</button>
+
+      <button data-key="4" class="key-4">4</button>
+      <button data-key="5" class="key-5">5</button>
+      <button data-key="6" class="key-6">6</button>
+      <button data-action="clear-field" class="danger-key key-clear">C</button>
+
+      <button data-key="1" class="key-1">1</button>
+      <button data-key="2" class="key-2">2</button>
+      <button data-key="3" class="key-3">3</button>
+      <button data-action="sign" class="utility-key key-sign">±</button>
+
+      <button data-key="0" class="key-0">0</button>
+      <button data-key="." class="key-dot">.</button>
+
+      <button data-op="+" class="op-key plus key-plus">+</button>
+      <button data-op="-" class="op-key minus key-minus">−</button>
+      <button data-op="*" class="op-key multiply key-multiply">×</button>
+      <button data-op="/" class="op-key divide key-divide">÷</button>
+      <button data-action="equals" class="op-key equals key-equals">=</button>
     </section>
   </div>
 
@@ -119,7 +127,7 @@
         <h3>Version Information</h3>
         <div class="version-card">
           <strong>Retail Margin Pro</strong>
-          <span>Version: v2.04</span>
+          <span>Version: v2.07</span>
         </div>
       </section>
 

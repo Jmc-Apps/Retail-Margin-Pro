@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "v2.04";
+const APP_VERSION = "v2.07";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
@@ -36,6 +36,8 @@ let values = { cost: "", gp: "", sell: "", rands: "" };
 let lastManual = [];
 let activeField = "cost";
 let replaceOnNextKey = true;
+let arithmeticLeft = null;
+let arithmeticOp = null;
 let costVat = false;
 let sellVat = false;
 let costLocked = false;
@@ -96,7 +98,11 @@ function touch(field){
 function setActive(field){
   const changed = activeField !== field;
   activeField = field;
-  if (changed) replaceOnNextKey = true;
+  if (changed) {
+    replaceOnNextKey = true;
+    arithmeticLeft = null;
+    arithmeticOp = null;
+  }
   document.querySelectorAll(".calc-row").forEach(row => {
     row.classList.toggle("active", row.dataset.field === field);
   });
@@ -232,6 +238,8 @@ function clearField(){
   });
   if (!costLocked) lockedCostExcl = null;
   selectedDept = null;
+  arithmeticLeft = null;
+  arithmeticOp = null;
   lastManual = [];
   replaceOnNextKey = true;
   renderToggles();
@@ -286,13 +294,66 @@ document.querySelectorAll(".calc-row").forEach(row => {
   });
 });
 
+
+function applyOperator(op){
+  const current = num(values[activeField]);
+  if (!Number.isFinite(current)) return;
+  arithmeticLeft = current;
+  arithmeticOp = op;
+  replaceOnNextKey = true;
+  $("statusText").textContent = `${label(activeField)}: ${fmt(arithmeticLeft)} ${opSymbol(op)}`;
+}
+
+function opSymbol(op){
+  return { "+": "+", "-": "−", "*": "×", "/": "÷" }[op] || op;
+}
+
+function equals(){
+  if (!arithmeticOp || !Number.isFinite(arithmeticLeft)) return;
+  const right = num(values[activeField]);
+  if (!Number.isFinite(right)) return;
+  let result = null;
+  if (arithmeticOp === "+") result = arithmeticLeft + right;
+  if (arithmeticOp === "-") result = arithmeticLeft - right;
+  if (arithmeticOp === "*") result = arithmeticLeft * right;
+  if (arithmeticOp === "/") {
+    if (right === 0) {
+      showProblem("Cannot divide by zero.");
+      arithmeticLeft = null;
+      arithmeticOp = null;
+      return;
+    }
+    result = arithmeticLeft / right;
+  }
+  if (!Number.isFinite(result)) return;
+  setRaw(activeField, fmt(result));
+  arithmeticLeft = null;
+  arithmeticOp = null;
+  replaceOnNextKey = true;
+  if (activeField === "gp" && selectedDept){
+    selectedDept = null;
+    renderToggles();
+  }
+  if (costLocked && activeField === "cost"){
+    const c = displayToExcl("cost");
+    if (Number.isFinite(c)) lockedCostExcl = c;
+    $("statusText").textContent = "Cost locked. Arithmetic result saved.";
+    return;
+  }
+  touch(activeField);
+  compute();
+}
+
+
 document.querySelector(".keypad").addEventListener("click", e => {
   const btn = e.target.closest("button");
   if (!btn) return;
   if (btn.dataset.key) appendKey(btn.dataset.key);
+  if (btn.dataset.op) applyOperator(btn.dataset.op);
   if (btn.dataset.action === "back") backspace();
   if (btn.dataset.action === "clear-field") clearField();
   if (btn.dataset.action === "sign") signToggle();
+  if (btn.dataset.action === "equals") equals();
   if (btn.dataset.action === "enter") enter();
 });
 
@@ -400,28 +461,56 @@ $("importFile").addEventListener("change", async e => {
 setActive("cost");
 renderToggles();
 
-// v2.04 manual update checking: no automatic update check on app load
+
+// v2.07 service worker registration and manual update checking
+async function registerServiceWorker() {
+  if (!("serviceWorker" in navigator)) return null;
+  if (!window.isSecureContext && location.hostname !== "localhost") return null;
+
+  try {
+    const registration = await navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" });
+    return registration;
+  } catch (error) {
+    return null;
+  }
+}
+
+const swReady = registerServiceWorker();
+
 const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
 const updateStatus = document.getElementById("updateStatus");
 
 async function manualCheckForUpdates() {
   if (!updateStatus) return;
+
   if (!("serviceWorker" in navigator)) {
     updateStatus.textContent = "Updates are not supported in this browser.";
     return;
   }
+
+  if (!window.isSecureContext && location.hostname !== "localhost") {
+    updateStatus.textContent = "Updates need the app to be hosted on HTTPS.";
+    return;
+  }
+
   updateStatus.textContent = "Checking for updates...";
+
   try {
-    const registration = await navigator.serviceWorker.getRegistration();
+    let registration = await navigator.serviceWorker.getRegistration();
     if (!registration) {
-      updateStatus.textContent = "App is running without an installed service worker.";
+      registration = await swReady;
+    }
+    if (!registration) {
+      updateStatus.textContent = "Service worker installed. Close and reopen once, then check again.";
       return;
     }
+
     await registration.update();
-    const waiting = registration.waiting || registration.installing;
+
     const stamp = new Date().toLocaleString();
     localStorage.setItem("rmpLastUpdateCheck", stamp);
-    if (waiting) {
+
+    if (registration.waiting || registration.installing) {
       updateStatus.textContent = "Update found. Close and reopen the app to finish installing.";
     } else {
       updateStatus.textContent = "No update found. Last checked: " + stamp;
@@ -436,3 +525,4 @@ if (checkUpdatesBtn) {
   if (last && updateStatus) updateStatus.textContent = "Last checked: " + last;
   checkUpdatesBtn.addEventListener("click", manualCheckForUpdates);
 }
+

@@ -1,4 +1,4 @@
-const CACHE_NAME = "retail-margin-pro-v2.04";
+const CACHE_NAME = "retail-margin-pro-v2.07";
 const APP_SHELL = [
   "./",
   "index.html",
@@ -28,16 +28,20 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// Cache-first only: normal app startup does not go online to look for updates.
-// Pressing "Check for Updates" in Settings calls registration.update().
+// Cache-first startup: the app opens from cache and only checks online
+// when the Settings > Check for Updates button calls registration.update().
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
+
       return fetch(event.request).then((response) => {
         const copy = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy)).catch(() => undefined);
+        caches.open(CACHE_NAME)
+          .then((cache) => cache.put(event.request, copy))
+          .catch(() => undefined);
         return response;
       });
     })
