@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "v2.03";
+const APP_VERSION = "v2.04";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
@@ -399,3 +399,40 @@ $("importFile").addEventListener("change", async e => {
 
 setActive("cost");
 renderToggles();
+
+// v2.04 manual update checking: no automatic update check on app load
+const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
+const updateStatus = document.getElementById("updateStatus");
+
+async function manualCheckForUpdates() {
+  if (!updateStatus) return;
+  if (!("serviceWorker" in navigator)) {
+    updateStatus.textContent = "Updates are not supported in this browser.";
+    return;
+  }
+  updateStatus.textContent = "Checking for updates...";
+  try {
+    const registration = await navigator.serviceWorker.getRegistration();
+    if (!registration) {
+      updateStatus.textContent = "App is running without an installed service worker.";
+      return;
+    }
+    await registration.update();
+    const waiting = registration.waiting || registration.installing;
+    const stamp = new Date().toLocaleString();
+    localStorage.setItem("rmpLastUpdateCheck", stamp);
+    if (waiting) {
+      updateStatus.textContent = "Update found. Close and reopen the app to finish installing.";
+    } else {
+      updateStatus.textContent = "No update found. Last checked: " + stamp;
+    }
+  } catch (error) {
+    updateStatus.textContent = "Could not check for updates. Check your connection.";
+  }
+}
+
+if (checkUpdatesBtn) {
+  const last = localStorage.getItem("rmpLastUpdateCheck");
+  if (last && updateStatus) updateStatus.textContent = "Last checked: " + last;
+  checkUpdatesBtn.addEventListener("click", manualCheckForUpdates);
+}
