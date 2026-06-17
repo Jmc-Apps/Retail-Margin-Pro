@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "v2.09";
+const APP_VERSION = "v2.10";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
@@ -113,9 +113,27 @@ function label(field){
 }
 function shortDeptName(name){
   if (!name) return "Dept";
-  const clean = String(name).trim();
-  if (clean.length <= 15) return clean;
-  return clean.slice(0, 14).trim() + "…";
+  const clean = String(name).trim().toUpperCase();
+  const map = {
+    "CONFECTIONARY BOUGHT IN": "CONF B/I",
+    "CONFECTIONARY": "CONF",
+    "BREAD BOUGHT IN": "BREAD B/I",
+    "BREAD": "BREAD",
+    "HEALTH & BEAUTY": "H&B",
+    "FRESH PRODUCE": "FRESH",
+    "BUTCHERY MEAT": "MEAT",
+    "CHICKEN": "CHICKEN",
+    "GROCERIES": "GROC",
+    "NON FOODS": "NON FOOD",
+    "PERISHABLES": "PERISH",
+    "FROZENS": "FROZEN",
+    "GIFTS": "GIFTS",
+    "EGGS": "EGGS",
+    "HMR": "HMR"
+  };
+  if (map[clean]) return map[clean];
+  if (clean.length <= 8) return clean;
+  return clean.slice(0, 7).trim() + "…";
 }
 
 function renderToggles(){
@@ -474,7 +492,7 @@ renderToggles();
 
 
 
-// v2.09 force reload from server
+// v2.10 force reload from server
 const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
 const updateStatus = document.getElementById("updateStatus");
 
