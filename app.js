@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "v2.07";
+const APP_VERSION = "v2.08";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
@@ -111,6 +111,13 @@ function setActive(field){
 function label(field){
   return { cost:"Cost", gp:"GP %", sell:"Sell", rands:"GP Rands" }[field];
 }
+function shortDeptName(name){
+  if (!name) return "Dept";
+  const clean = String(name).trim();
+  if (clean.length <= 15) return clean;
+  return clean.slice(0, 14).trim() + "…";
+}
+
 function renderToggles(){
   $("costVatBtn").classList.toggle("active", costVat);
   $("costVatBtn").textContent = costVat ? "VAT ✓" : "VAT";
@@ -118,7 +125,8 @@ function renderToggles(){
   $("sellVatBtn").textContent = sellVat ? "VAT ✓" : "VAT";
   $("costLockBtn").classList.toggle("active", costLocked);
   $("costLockBtn").textContent = costLocked ? "🔒" : "🔓";
-  $("deptBtn").textContent = selectedDept ? selectedDept.name : "Dept";
+  $("deptBtn").textContent = selectedDept ? shortDeptName(selectedDept.name) : "Dept";
+  $("deptBtn").title = selectedDept ? selectedDept.name : "Select Department";
   $("deptBtn").classList.toggle("active", Boolean(selectedDept));
 }
 function showProblem(message){
@@ -462,7 +470,7 @@ setActive("cost");
 renderToggles();
 
 
-// v2.07 service worker registration and manual update checking
+// v2.08 service worker registration and manual update checking
 async function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return null;
   if (!window.isSecureContext && location.hostname !== "localhost") return null;

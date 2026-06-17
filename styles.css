@@ -214,7 +214,7 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
   .keypad button{border-radius:15px;font-size:1.25rem}
 }
 
-/* v2.07 one-screen no-scroll calculator layout */
+/* v2.08 one-screen no-scroll calculator layout */
 html,
 body {
   width: 100%;
@@ -369,7 +369,7 @@ dialog,
   }
 }
 
-/* v2.07 manual update controls */
+/* v2.08 manual update controls */
 .update-card {
   display: grid;
   gap: 8px;
@@ -390,7 +390,7 @@ dialog,
   font-size: 0.9rem;
 }
 
-/* v2.07 Image 2 inspired UI refresh */
+/* v2.08 Image 2 inspired UI refresh */
 body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 100%)!important}
 .app-shell{background:linear-gradient(180deg,#07111f 0%,#0b1220 100%)!important;gap:7px!important}
 .app-header{background:linear-gradient(180deg,#061b45 0%,#07111f 100%)!important;border:1px solid rgba(96,165,250,.18);box-shadow:0 8px 24px rgba(0,0,0,.45)}
@@ -427,7 +427,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
 .keypad .equals{background:linear-gradient(180deg,#22c55e,#15803d)!important;font-size:1.8rem!important}
 @media(max-height:700px){.calc-row{grid-template-columns:38px 72px 1fr auto!important}.field-icon{width:32px;height:32px;border-radius:11px;font-size:.9rem}.gp-icon{font-size:1.2rem}.row-label{font-size:.78rem!important}.row-value{font-size:clamp(1.2rem,6.3vw,1.9rem)!important}.keypad button{font-size:1.05rem!important}.keypad .op-key{font-size:1.25rem!important}}
 
-/* v2.07 fixed keypad button placement */
+/* v2.08 fixed keypad button placement */
 .keypad {
   grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
   grid-auto-rows: auto;
@@ -459,4 +459,92 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
 
 .keypad button {
   min-width: 0;
+}
+
+/* v2.08 GP department overflow fix */
+.calc-row {
+  min-width: 0;
+}
+
+.row-gp {
+  grid-template-columns: 54px 64px minmax(84px, 1fr) minmax(76px, auto) !important;
+}
+
+.row-gp .row-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 4px;
+}
+
+.row-gp .row-actions {
+  min-width: 0 !important;
+  max-width: min(34vw, 155px);
+  overflow: hidden;
+}
+
+.row-gp #deptBtn {
+  max-width: min(34vw, 155px);
+  min-width: 54px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  justify-content: center;
+  font-size: clamp(0.58rem, 2.7vw, 0.78rem) !important;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+@media (max-width: 390px) {
+  .row-gp {
+    grid-template-columns: 42px 54px minmax(70px, 1fr) minmax(60px, auto) !important;
+  }
+  .row-gp #deptBtn {
+    max-width: 112px;
+    font-size: 0.58rem !important;
+  }
+}
+
+/* v2.08 portrait mode lock */
+.portrait-lock-notice {
+  display: none;
+}
+
+@media screen and (orientation: landscape) {
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: #07111f;
+    z-index: 9998;
+  }
+
+  .portrait-lock-notice {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    background: #07111f;
+    color: #ffffff;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .portrait-lock-notice div {
+    display: grid;
+    gap: 10px;
+    max-width: 360px;
+  }
+
+  .portrait-lock-notice strong {
+    font-size: 1.35rem;
+  }
+
+  .portrait-lock-notice span {
+    color: #cbd5e1;
+    line-height: 1.4;
+  }
 }
