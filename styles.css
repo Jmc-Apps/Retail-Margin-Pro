@@ -214,7 +214,7 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
   .keypad button{border-radius:15px;font-size:1.25rem}
 }
 
-/* v2.20 one-screen no-scroll calculator layout */
+/* v2.21 one-screen no-scroll calculator layout */
 html,
 body {
   width: 100%;
@@ -369,7 +369,7 @@ dialog,
   }
 }
 
-/* v2.20 manual update controls */
+/* v2.21 manual update controls */
 .update-card {
   display: grid;
   gap: 8px;
@@ -390,7 +390,7 @@ dialog,
   font-size: 0.9rem;
 }
 
-/* v2.20 Image 2 inspired UI refresh */
+/* v2.21 Image 2 inspired UI refresh */
 body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 100%)!important}
 .app-shell{background:linear-gradient(180deg,#07111f 0%,#0b1220 100%)!important;gap:7px!important}
 .app-header{background:linear-gradient(180deg,#061b45 0%,#07111f 100%)!important;border:1px solid rgba(96,165,250,.18);box-shadow:0 8px 24px rgba(0,0,0,.45)}
@@ -427,7 +427,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
 .keypad .equals{background:linear-gradient(180deg,#22c55e,#15803d)!important;font-size:1.8rem!important}
 @media(max-height:700px){.calc-row{grid-template-columns:38px 72px 1fr auto!important}.field-icon{width:32px;height:32px;border-radius:11px;font-size:.9rem}.gp-icon{font-size:1.2rem}.row-label{font-size:.78rem!important}.row-value{font-size:clamp(1.2rem,6.3vw,1.9rem)!important}.keypad button{font-size:1.05rem!important}.keypad .op-key{font-size:1.25rem!important}}
 
-/* v2.20 fixed keypad button placement */
+/* v2.21 fixed keypad button placement */
 .keypad {
   grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
   grid-auto-rows: auto;
@@ -461,7 +461,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   min-width: 0;
 }
 
-/* v2.20 GP department overflow fix */
+/* v2.21 GP department overflow fix */
 .calc-row {
   min-width: 0;
 }
@@ -505,7 +505,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.20 portrait mode lock */
+/* v2.21 portrait mode lock */
 .portrait-lock-notice {
   display: none;
 }
@@ -549,7 +549,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.20 landscape remains functional with portrait-style centered panel */
+/* v2.21 landscape remains functional with portrait-style centered panel */
 .portrait-lock-notice {
   display: none !important;
 }
@@ -581,7 +581,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.20 stronger department button shortening */
+/* v2.21 stronger department button shortening */
 .row-gp {
   grid-template-columns: 42px 54px minmax(96px, 1fr) minmax(52px, auto) !important;
 }
@@ -621,7 +621,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.20 GP department name under value */
+/* v2.21 GP department name under value */
 .row-gp {
   grid-template-columns: 42px 54px minmax(108px, 1fr) minmax(52px, auto) !important;
 }
@@ -695,7 +695,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.20 portrait-primary request + landscape fallback panel */
+/* v2.21 portrait-primary request + landscape fallback panel */
 .portrait-lock-notice {
   display: none !important;
 }
@@ -796,7 +796,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.20 block order/value alignment */
+/* v2.21 block order/value alignment */
 .calc-row {
   grid-template-columns: 42px 60px minmax(0, 1fr) 66px !important;
   column-gap: 8px !important;
@@ -882,7 +882,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.20 landscape-only split layout: cards left, keypad right. Portrait layout is unchanged. */
+/* v2.21 landscape-only split layout: cards left, keypad right. Portrait layout is unchanged. */
 @media screen and (orientation: landscape) {
   html,
   body {
@@ -1069,7 +1069,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.20 fixes */
+/* v2.21 fixes */
 
 /* GP value alignment: all number values use the same right edge. */
 .calc-row {
@@ -1310,7 +1310,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.20 cost value / lock button spacing fix */
+/* v2.21 cost value / lock button spacing fix */
 
 /* Give rows with two action buttons enough reserved space so the numeric value does not slide under them. */
 .calc-row[data-field="cost"],
@@ -1396,7 +1396,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.20 hard fix: prevent Cost lock/VAT buttons from covering the Cost value */
+/* v2.21 hard fix: prevent Cost lock/VAT buttons from covering the Cost value */
 
 /* Use a wider, fixed action column for Cost so both buttons live fully to the right of the value. */
 .calc-row[data-field="cost"] {
@@ -1531,7 +1531,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.20 Cost lock moved to the left icon */
+/* v2.21 Cost lock moved to the left icon */
 
 /* Cost row now only has one right-side VAT action, so the value has proper space. */
 .calc-row[data-field="cost"] {
@@ -1613,7 +1613,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.20 final Cost lock cleanup */
+/* v2.21 final Cost lock cleanup */
 
 /* The old right-side lock button must never display, even if older cached HTML leaks it in. */
 #costLockBtn {
@@ -1714,7 +1714,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.20 make the left Cost lock icon reliably tappable */
+/* v2.21 make the left Cost lock icon reliably tappable */
 .cost-lock-icon {
   position: relative !important;
   z-index: 5 !important;
@@ -1724,4 +1724,16 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
 
 .cost-lock-icon.locked {
   background: linear-gradient(145deg, #ef4444, #991b1b) !important;
+}
+
+/* v2.21 hard colour override for Cost lock icon */
+.calc-row[data-field="cost"] #costLockIcon.cost-lock-icon {
+  background: linear-gradient(145deg, #2563eb, #1d4ed8) !important;
+  color: #ffffff !important;
+}
+
+.calc-row[data-field="cost"] #costLockIcon.cost-lock-icon.locked,
+.calc-row[data-field="cost"] #costLockIcon.cost-lock-icon[aria-pressed="true"] {
+  background: linear-gradient(145deg, #ef4444, #991b1b) !important;
+  color: #ffffff !important;
 }

@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "v2.20";
+const APP_VERSION = "v2.21";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
@@ -151,6 +151,12 @@ function updateCostLockIconState(){
   icon.title = costLocked ? "Cost locked" : "Cost unlocked";
   icon.setAttribute("aria-label", costLocked ? "Cost locked" : "Cost unlocked");
   icon.setAttribute("aria-pressed", costLocked ? "true" : "false");
+  icon.style.background = costLocked
+    ? "linear-gradient(145deg, #ef4444, #991b1b)"
+    : "linear-gradient(145deg, #2563eb, #1d4ed8)";
+  icon.style.boxShadow = costLocked
+    ? "inset 0 1px 0 rgba(255,255,255,.28), 0 9px 18px rgba(153,27,27,.36)"
+    : "inset 0 1px 0 rgba(255,255,255,.28), 0 9px 18px rgba(37,99,235,.30)";
 }
 
 function renderToggles(){
@@ -172,8 +178,10 @@ function compute(){
   let pair = lastManual.filter(f => num(values[f]) !== null).slice(-2);
 
   if (costLocked){
-    const c = displayToExcl("cost");
-    if (Number.isFinite(c)) lockedCostExcl = c;
+    if (!Number.isFinite(lockedCostExcl)){
+      const c = displayToExcl("cost");
+      if (Number.isFinite(c)) lockedCostExcl = c;
+    }
     const driver = [...lastManual].reverse().find(f => f !== "cost" && num(values[f]) !== null);
     if (!Number.isFinite(lockedCostExcl)){
       $("markupText").textContent = "Markup: N/C";
@@ -229,7 +237,11 @@ function compute(){
   if (![cost, sell, gp, rands].every(Number.isFinite)) return showProblem("Check values.");
   if (cost < 0 || sell < 0) return showProblem("Negative value created.");
 
-  if (!costLocked && !has("cost")) setValue("cost", exclToDisplay("cost", cost));
+  if (costLocked && Number.isFinite(lockedCostExcl)) {
+    setValue("cost", exclToDisplay("cost", lockedCostExcl));
+  } else if (!has("cost")) {
+    setValue("cost", exclToDisplay("cost", cost));
+  }
   if (!has("sell")) setValue("sell", exclToDisplay("sell", sell));
   if (!has("gp")) setValue("gp", gp);
   if (!has("rands")) setValue("rands", rands);
@@ -256,6 +268,7 @@ function appendKey(k){
   if (costLocked && activeField === "cost"){
     const c = displayToExcl("cost");
     if (Number.isFinite(c)) lockedCostExcl = c;
+    updateCostLockIconState();
     $("statusText").textContent = "Cost locked. Cost updated.";
     return;
   }
@@ -498,7 +511,7 @@ renderToggles();
 
 
 
-// v2.20 force reload from server
+// v2.21 force reload from server
 const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
 const updateStatus = document.getElementById("updateStatus");
 
@@ -553,7 +566,7 @@ if (checkUpdatesBtn) {
 
 
 
-// v2.20 landscape layout fallback for iOS PWA rotation behavior
+// v2.21 landscape layout fallback for iOS PWA rotation behavior
 function updateLandscapeLayoutClass() {
   const isLandscape = window.innerWidth > window.innerHeight && window.innerWidth >= 640;
   document.body.classList.toggle("is-landscape-layout", isLandscape);
@@ -580,7 +593,7 @@ if (costLockIconEl) {
 
 
 
-// v2.20 left Cost icon is the only Cost lock button
+// v2.21 left Cost icon is the only Cost lock button
 const costLockIconElV219 = document.getElementById("costLockIcon");
 if (costLockIconElV219) {
   costLockIconElV219.addEventListener("click", (event) => {
@@ -596,24 +609,27 @@ if (costLockIconElV219) {
 
 
 
-// v2.20 robust Cost lock icon control
+// v2.21 robust Cost lock icon control
 function toggleCostLockFromIcon(event) {
   if (event) {
     event.preventDefault();
     event.stopPropagation();
   }
-  const c = displayToExcl("cost", num(values.cost) || 0);
-  if (!costLocked && !Number.isFinite(c)) {
-    showProblem("Enter Cost before locking.");
-    return;
-  }
+
   if (!costLocked) {
+    const c = displayToExcl("cost");
+    if (!Number.isFinite(c)) {
+      showProblem("Enter Cost before locking.");
+      return;
+    }
     lockedCostExcl = c;
     costLocked = true;
+    setValue("cost", exclToDisplay("cost", lockedCostExcl));
   } else {
     costLocked = false;
     lockedCostExcl = null;
   }
+
   updateCostLockIconState();
   renderToggles();
   compute();
