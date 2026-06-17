@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "v2.10";
+const APP_VERSION = "v2.11";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
@@ -136,6 +136,13 @@ function shortDeptName(name){
   return clean.slice(0, 7).trim() + "…";
 }
 
+function updateGpDeptName(){
+  const label = document.getElementById("gpDeptName");
+  if (!label) return;
+  label.textContent = selectedDept ? selectedDept.name : "";
+  label.title = selectedDept ? selectedDept.name : "";
+}
+
 function renderToggles(){
   $("costVatBtn").classList.toggle("active", costVat);
   $("costVatBtn").textContent = costVat ? "VAT ✓" : "VAT";
@@ -143,8 +150,9 @@ function renderToggles(){
   $("sellVatBtn").textContent = sellVat ? "VAT ✓" : "VAT";
   $("costLockBtn").classList.toggle("active", costLocked);
   $("costLockBtn").textContent = costLocked ? "🔒" : "🔓";
-  $("deptBtn").textContent = selectedDept ? shortDeptName(selectedDept.name) : "Dept";
+  $("deptBtn").textContent = "Dept";
   $("deptBtn").title = selectedDept ? selectedDept.name : "Select Department";
+  updateGpDeptName();
   $("deptBtn").classList.toggle("active", Boolean(selectedDept));
 }
 function showProblem(message){
@@ -492,7 +500,7 @@ renderToggles();
 
 
 
-// v2.10 force reload from server
+// v2.11 force reload from server
 const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
 const updateStatus = document.getElementById("updateStatus");
 

@@ -214,7 +214,7 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
   .keypad button{border-radius:15px;font-size:1.25rem}
 }
 
-/* v2.10 one-screen no-scroll calculator layout */
+/* v2.11 one-screen no-scroll calculator layout */
 html,
 body {
   width: 100%;
@@ -369,7 +369,7 @@ dialog,
   }
 }
 
-/* v2.10 manual update controls */
+/* v2.11 manual update controls */
 .update-card {
   display: grid;
   gap: 8px;
@@ -390,7 +390,7 @@ dialog,
   font-size: 0.9rem;
 }
 
-/* v2.10 Image 2 inspired UI refresh */
+/* v2.11 Image 2 inspired UI refresh */
 body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 100%)!important}
 .app-shell{background:linear-gradient(180deg,#07111f 0%,#0b1220 100%)!important;gap:7px!important}
 .app-header{background:linear-gradient(180deg,#061b45 0%,#07111f 100%)!important;border:1px solid rgba(96,165,250,.18);box-shadow:0 8px 24px rgba(0,0,0,.45)}
@@ -427,7 +427,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
 .keypad .equals{background:linear-gradient(180deg,#22c55e,#15803d)!important;font-size:1.8rem!important}
 @media(max-height:700px){.calc-row{grid-template-columns:38px 72px 1fr auto!important}.field-icon{width:32px;height:32px;border-radius:11px;font-size:.9rem}.gp-icon{font-size:1.2rem}.row-label{font-size:.78rem!important}.row-value{font-size:clamp(1.2rem,6.3vw,1.9rem)!important}.keypad button{font-size:1.05rem!important}.keypad .op-key{font-size:1.25rem!important}}
 
-/* v2.10 fixed keypad button placement */
+/* v2.11 fixed keypad button placement */
 .keypad {
   grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
   grid-auto-rows: auto;
@@ -461,7 +461,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   min-width: 0;
 }
 
-/* v2.10 GP department overflow fix */
+/* v2.11 GP department overflow fix */
 .calc-row {
   min-width: 0;
 }
@@ -505,7 +505,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.10 portrait mode lock */
+/* v2.11 portrait mode lock */
 .portrait-lock-notice {
   display: none;
 }
@@ -549,7 +549,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.10 landscape remains functional with portrait-style centered panel */
+/* v2.11 landscape remains functional with portrait-style centered panel */
 .portrait-lock-notice {
   display: none !important;
 }
@@ -581,7 +581,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.10 stronger department button shortening */
+/* v2.11 stronger department button shortening */
 .row-gp {
   grid-template-columns: 42px 54px minmax(96px, 1fr) minmax(52px, auto) !important;
 }
@@ -618,5 +618,79 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
 
   .row-gp #deptBtn {
     font-size: 0.48rem !important;
+  }
+}
+
+/* v2.11 GP department name under value */
+.row-gp {
+  grid-template-columns: 42px 54px minmax(108px, 1fr) minmax(52px, auto) !important;
+}
+
+.gp-value-stack {
+  z-index: 1;
+  min-width: 0;
+  display: grid;
+  justify-items: end;
+  align-items: center;
+  line-height: 1;
+  overflow: hidden;
+}
+
+.gp-value-stack #gpDisplay {
+  width: 100%;
+  display: block;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gp-dept-name {
+  width: 100%;
+  display: block;
+  min-height: 0.72rem;
+  margin-top: 2px;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #15803d;
+  font-weight: 800;
+  font-size: clamp(0.48rem, 2.05vw, 0.68rem);
+  letter-spacing: 0.015em;
+}
+
+.row-gp .row-actions,
+.row-gp #deptBtn {
+  max-width: 58px !important;
+  min-width: 48px !important;
+}
+
+.row-gp #deptBtn {
+  font-size: 0.58rem !important;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+}
+
+@media (max-width: 390px) {
+  .row-gp {
+    grid-template-columns: 36px 48px minmax(96px, 1fr) minmax(46px, auto) !important;
+  }
+
+  .gp-dept-name {
+    font-size: 0.48rem !important;
+  }
+
+  .row-gp .row-actions,
+  .row-gp #deptBtn {
+    max-width: 50px !important;
+    min-width: 44px !important;
+  }
+}
+
+@media (max-height: 700px) {
+  .gp-dept-name {
+    font-size: 0.46rem !important;
+    margin-top: 1px;
   }
 }
