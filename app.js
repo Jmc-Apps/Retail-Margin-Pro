@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "v2.12";
+const APP_VERSION = "v2.14";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
@@ -500,7 +500,7 @@ renderToggles();
 
 
 
-// v2.12 force reload from server
+// v2.14 force reload from server
 const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
 const updateStatus = document.getElementById("updateStatus");
 

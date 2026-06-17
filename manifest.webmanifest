@@ -5,7 +5,7 @@
   "display": "standalone",
   "background_color": "#eef2f7",
   "theme_color": "#101826",
-  "orientation": "portrait-primary",
+  "orientation": "any",
   "icons": [
     {
       "src": "assets/icon-192.png",
@@ -32,5 +32,5 @@
       "purpose": "any"
     }
   ],
-  "version": "2.12"
+  "version": "2.14"
 }

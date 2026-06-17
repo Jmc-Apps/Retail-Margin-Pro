@@ -214,7 +214,7 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
   .keypad button{border-radius:15px;font-size:1.25rem}
 }
 
-/* v2.12 one-screen no-scroll calculator layout */
+/* v2.14 one-screen no-scroll calculator layout */
 html,
 body {
   width: 100%;
@@ -369,7 +369,7 @@ dialog,
   }
 }
 
-/* v2.12 manual update controls */
+/* v2.14 manual update controls */
 .update-card {
   display: grid;
   gap: 8px;
@@ -390,7 +390,7 @@ dialog,
   font-size: 0.9rem;
 }
 
-/* v2.12 Image 2 inspired UI refresh */
+/* v2.14 Image 2 inspired UI refresh */
 body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 100%)!important}
 .app-shell{background:linear-gradient(180deg,#07111f 0%,#0b1220 100%)!important;gap:7px!important}
 .app-header{background:linear-gradient(180deg,#061b45 0%,#07111f 100%)!important;border:1px solid rgba(96,165,250,.18);box-shadow:0 8px 24px rgba(0,0,0,.45)}
@@ -427,7 +427,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
 .keypad .equals{background:linear-gradient(180deg,#22c55e,#15803d)!important;font-size:1.8rem!important}
 @media(max-height:700px){.calc-row{grid-template-columns:38px 72px 1fr auto!important}.field-icon{width:32px;height:32px;border-radius:11px;font-size:.9rem}.gp-icon{font-size:1.2rem}.row-label{font-size:.78rem!important}.row-value{font-size:clamp(1.2rem,6.3vw,1.9rem)!important}.keypad button{font-size:1.05rem!important}.keypad .op-key{font-size:1.25rem!important}}
 
-/* v2.12 fixed keypad button placement */
+/* v2.14 fixed keypad button placement */
 .keypad {
   grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
   grid-auto-rows: auto;
@@ -461,7 +461,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   min-width: 0;
 }
 
-/* v2.12 GP department overflow fix */
+/* v2.14 GP department overflow fix */
 .calc-row {
   min-width: 0;
 }
@@ -505,7 +505,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.12 portrait mode lock */
+/* v2.14 portrait mode lock */
 .portrait-lock-notice {
   display: none;
 }
@@ -549,7 +549,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.12 landscape remains functional with portrait-style centered panel */
+/* v2.14 landscape remains functional with portrait-style centered panel */
 .portrait-lock-notice {
   display: none !important;
 }
@@ -581,7 +581,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.12 stronger department button shortening */
+/* v2.14 stronger department button shortening */
 .row-gp {
   grid-template-columns: 42px 54px minmax(96px, 1fr) minmax(52px, auto) !important;
 }
@@ -621,7 +621,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.12 GP department name under value */
+/* v2.14 GP department name under value */
 .row-gp {
   grid-template-columns: 42px 54px minmax(108px, 1fr) minmax(52px, auto) !important;
 }
@@ -695,7 +695,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.12 portrait-primary request + landscape fallback panel */
+/* v2.14 portrait-primary request + landscape fallback panel */
 .portrait-lock-notice {
   display: none !important;
 }
@@ -793,5 +793,278 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
 
   .keypad .equals {
     font-size: 1.25rem !important;
+  }
+}
+
+/* v2.14 block order/value alignment */
+.calc-row {
+  grid-template-columns: 42px 60px minmax(0, 1fr) 66px !important;
+  column-gap: 8px !important;
+}
+
+.calc-row .row-value,
+.gp-value-stack #gpDisplay {
+  justify-self: end !important;
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+  min-width: 92px;
+  max-width: 100%;
+}
+
+.gp-value-stack {
+  justify-self: end !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.gp-dept-name {
+  justify-self: end !important;
+  text-align: right !important;
+}
+
+.row-actions {
+  justify-self: end !important;
+  width: 66px !important;
+  min-width: 66px !important;
+  max-width: 66px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 4px !important;
+}
+
+.row-gp {
+  grid-template-columns: 42px 60px minmax(0, 1fr) 66px !important;
+}
+
+.row-gp .row-actions,
+.row-gp #deptBtn {
+  width: 66px !important;
+  min-width: 66px !important;
+  max-width: 66px !important;
+}
+
+.row-rands,
+.calc-row[data-field="rands"] {
+  grid-template-columns: 42px 60px minmax(0, 1fr) 66px !important;
+}
+
+.calc-row[data-field="rands"]::after {
+  content: "";
+  width: 66px;
+  min-width: 66px;
+}
+
+@media (max-width: 390px) {
+  .calc-row,
+  .row-gp,
+  .row-rands,
+  .calc-row[data-field="rands"] {
+    grid-template-columns: 36px 52px minmax(0, 1fr) 58px !important;
+    column-gap: 6px !important;
+  }
+
+  .row-actions,
+  .row-gp .row-actions,
+  .row-gp #deptBtn {
+    width: 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
+  }
+
+  .calc-row[data-field="rands"]::after {
+    width: 58px;
+    min-width: 58px;
+  }
+
+  .calc-row .row-value,
+  .gp-value-stack #gpDisplay {
+    min-width: 82px;
+  }
+}
+
+/* v2.14 landscape-only split layout: cards left, keypad right. Portrait layout is unchanged. */
+@media screen and (orientation: landscape) {
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden !important;
+    background:
+      radial-gradient(circle at 24% 10%, rgba(35,80,150,.28), transparent 34%),
+      radial-gradient(circle at 82% 35%, rgba(25,55,120,.18), transparent 34%),
+      #020917 !important;
+  }
+
+  body::before,
+  .portrait-lock-notice {
+    content: none !important;
+    display: none !important;
+  }
+
+  .app-shell {
+    width: 100vw !important;
+    max-width: none !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    margin: 0 !important;
+    padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)) !important;
+    overflow: hidden !important;
+    display: grid !important;
+    grid-template-columns: minmax(320px, 54%) minmax(310px, 46%) !important;
+    grid-template-rows: clamp(44px, 13dvh, 72px) minmax(0, 1fr) !important;
+    column-gap: 12px !important;
+    row-gap: 8px !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  .app-header {
+    grid-column: 1 / 2 !important;
+    grid-row: 1 / 2 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    border-radius: 16px !important;
+    padding: 6px 10px !important;
+  }
+
+  .title-logo {
+    max-height: clamp(28px, 8dvh, 46px) !important;
+    max-width: 72% !important;
+  }
+
+  #settingsBtn {
+    width: clamp(38px, 7dvh, 50px) !important;
+    height: clamp(38px, 7dvh, 50px) !important;
+    border-radius: 13px !important;
+    font-size: clamp(1rem, 4dvh, 1.4rem) !important;
+  }
+
+  .calc-panel {
+    grid-column: 1 / 2 !important;
+    grid-row: 2 / 3 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    display: grid !important;
+    grid-template-rows: repeat(4, minmax(46px, 1fr)) minmax(36px, .55fr) !important;
+    gap: 6px !important;
+    padding: 0 !important;
+  }
+
+  .keypad {
+    grid-column: 2 / 3 !important;
+    grid-row: 1 / 3 !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    align-self: stretch !important;
+    padding: clamp(8px, 1.4vw, 16px) !important;
+    gap: clamp(5px, 1vw, 11px) !important;
+    border-radius: 18px !important;
+    background: linear-gradient(145deg, rgba(18,42,79,.92), rgba(7,21,45,.96)) !important;
+    border: 1px solid rgba(140,170,225,.25) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 15px 38px rgba(0,0,0,.34) !important;
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    grid-template-rows: repeat(5, minmax(0, 1fr)) !important;
+  }
+
+  .calc-row {
+    min-height: 0 !important;
+    max-height: none !important;
+    height: 100% !important;
+    padding: clamp(5px, 1.1dvh, 9px) clamp(10px, 1.5vw, 18px) !important;
+    border-radius: 14px !important;
+    grid-template-columns: clamp(30px, 6dvh, 45px) clamp(62px, 9vw, 96px) minmax(0, 1fr) clamp(58px, 8vw, 76px) !important;
+    column-gap: clamp(6px, 1.1vw, 12px) !important;
+  }
+
+  .field-icon {
+    width: clamp(30px, 6dvh, 44px) !important;
+    height: clamp(30px, 6dvh, 44px) !important;
+    border-radius: 11px !important;
+    font-size: clamp(.78rem, 2.6dvh, 1.2rem) !important;
+  }
+
+  .row-label {
+    font-size: clamp(.72rem, 2.6dvh, 1.05rem) !important;
+    white-space: nowrap !important;
+  }
+
+  .calc-row .row-value,
+  .gp-value-stack #gpDisplay {
+    min-width: clamp(82px, 14vw, 130px) !important;
+    font-size: clamp(1.4rem, 6.2dvh, 2.45rem) !important;
+    line-height: .95 !important;
+    text-align: right !important;
+    justify-self: end !important;
+  }
+
+  .gp-value-stack {
+    width: 100% !important;
+    justify-self: end !important;
+    align-self: center !important;
+  }
+
+  .gp-dept-name {
+    font-size: clamp(.44rem, 1.65dvh, .72rem) !important;
+    margin-top: 2px !important;
+    text-align: right !important;
+  }
+
+  .row-actions,
+  .row-gp .row-actions,
+  .row-gp #deptBtn {
+    width: clamp(58px, 8vw, 76px) !important;
+    min-width: clamp(58px, 8vw, 76px) !important;
+    max-width: clamp(58px, 8vw, 76px) !important;
+    justify-self: end !important;
+  }
+
+  .mini-btn,
+  .row-gp #deptBtn {
+    min-height: clamp(28px, 5dvh, 42px) !important;
+    border-radius: 10px !important;
+    font-size: clamp(.58rem, 2.1dvh, .9rem) !important;
+    padding: 4px 6px !important;
+  }
+
+  .calc-row[data-field="rands"]::after {
+    width: clamp(58px, 8vw, 76px) !important;
+    min-width: clamp(58px, 8vw, 76px) !important;
+  }
+
+  .info-strip {
+    min-height: 0 !important;
+    height: 100% !important;
+    border-radius: 13px !important;
+    padding: 6px 12px !important;
+    font-size: clamp(.68rem, 2.5dvh, 1rem) !important;
+  }
+
+  .keypad button {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    border-radius: clamp(12px, 2.1vw, 22px) !important;
+    font-size: clamp(1.15rem, 5.4dvh, 2rem) !important;
+  }
+
+  .keypad .op-key,
+  .keypad .equals {
+    font-size: clamp(1.2rem, 5.8dvh, 2.15rem) !important;
+  }
+
+  /* Keep existing keypad positions but make them fill the right-side panel cleanly. */
+  .key-0 { grid-column: 1 / 4 !important; }
+  .key-dot { grid-column: 4 / 6 !important; }
+  .key-back { grid-column: 4 / 6 !important; }
+  .key-clear { grid-column: 4 / 6 !important; }
+  .key-sign { grid-column: 4 / 6 !important; }
+
+  dialog {
+    max-height: calc(100dvh - 18px) !important;
   }
 }
