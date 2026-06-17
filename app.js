@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "v2.08";
+const APP_VERSION = "v2.09";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
@@ -470,14 +470,20 @@ setActive("cost");
 renderToggles();
 
 
-// v2.08 service worker registration and manual update checking
+
+
+
+
+// v2.09 force reload from server
+const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
+const updateStatus = document.getElementById("updateStatus");
+
 async function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return null;
   if (!window.isSecureContext && location.hostname !== "localhost") return null;
 
   try {
-    const registration = await navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" });
-    return registration;
+    return await navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" });
   } catch (error) {
     return null;
   }
@@ -485,52 +491,39 @@ async function registerServiceWorker() {
 
 const swReady = registerServiceWorker();
 
-const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
-const updateStatus = document.getElementById("updateStatus");
-
-async function manualCheckForUpdates() {
+async function forceReloadFromServer() {
   if (!updateStatus) return;
 
-  if (!("serviceWorker" in navigator)) {
-    updateStatus.textContent = "Updates are not supported in this browser.";
+  if (!navigator.onLine) {
+    updateStatus.textContent = "You appear to be offline. Connect to the internet and try again.";
     return;
   }
 
-  if (!window.isSecureContext && location.hostname !== "localhost") {
-    updateStatus.textContent = "Updates need the app to be hosted on HTTPS.";
-    return;
-  }
-
-  updateStatus.textContent = "Checking for updates...";
+  updateStatus.textContent = "Clearing cache and reloading from server...";
 
   try {
-    let registration = await navigator.serviceWorker.getRegistration();
-    if (!registration) {
-      registration = await swReady;
-    }
-    if (!registration) {
-      updateStatus.textContent = "Service worker installed. Close and reopen once, then check again.";
-      return;
+    if ("serviceWorker" in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map((registration) => registration.unregister()));
     }
 
-    await registration.update();
-
-    const stamp = new Date().toLocaleString();
-    localStorage.setItem("rmpLastUpdateCheck", stamp);
-
-    if (registration.waiting || registration.installing) {
-      updateStatus.textContent = "Update found. Close and reopen the app to finish installing.";
-    } else {
-      updateStatus.textContent = "No update found. Last checked: " + stamp;
+    if ("caches" in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map((key) => caches.delete(key)));
     }
+
+    const stamp = Date.now();
+    const cleanPath = window.location.pathname.replace(/\/$/, "/index.html");
+    const target = window.location.origin + cleanPath + "?serverReload=" + stamp;
+    window.location.replace(target);
   } catch (error) {
-    updateStatus.textContent = "Could not check for updates. Check your connection.";
+    updateStatus.textContent = "Could not force reload. Try closing and reopening the app.";
   }
 }
 
 if (checkUpdatesBtn) {
-  const last = localStorage.getItem("rmpLastUpdateCheck");
-  if (last && updateStatus) updateStatus.textContent = "Last checked: " + last;
-  checkUpdatesBtn.addEventListener("click", manualCheckForUpdates);
+  checkUpdatesBtn.textContent = "Force Reload from Server";
+  if (updateStatus) updateStatus.textContent = "Reloads the latest hosted files from the server.";
+  checkUpdatesBtn.addEventListener("click", forceReloadFromServer);
 }
 

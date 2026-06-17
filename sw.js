@@ -1,4 +1,4 @@
-const CACHE_NAME = "retail-margin-pro-v2.08";
+const CACHE_NAME = "retail-margin-pro-v2.09";
 const APP_SHELL = [
   "./",
   "index.html",
@@ -28,10 +28,16 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// Cache-first startup: the app opens from cache and only checks online
-// when the Settings > Check for Updates button calls registration.update().
+// Cache-first startup. Settings > Force Reload from Server clears this cache,
+// unregisters the service worker, and reloads with a cache-busting URL.
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+
+  const url = new URL(event.request.url);
+  if (url.searchParams.has("serverReload")) {
+    event.respondWith(fetch(event.request, { cache: "reload" }));
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
