@@ -214,7 +214,7 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
   .keypad button{border-radius:15px;font-size:1.25rem}
 }
 
-/* v2.14 one-screen no-scroll calculator layout */
+/* v2.15 one-screen no-scroll calculator layout */
 html,
 body {
   width: 100%;
@@ -369,7 +369,7 @@ dialog,
   }
 }
 
-/* v2.14 manual update controls */
+/* v2.15 manual update controls */
 .update-card {
   display: grid;
   gap: 8px;
@@ -390,7 +390,7 @@ dialog,
   font-size: 0.9rem;
 }
 
-/* v2.14 Image 2 inspired UI refresh */
+/* v2.15 Image 2 inspired UI refresh */
 body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 100%)!important}
 .app-shell{background:linear-gradient(180deg,#07111f 0%,#0b1220 100%)!important;gap:7px!important}
 .app-header{background:linear-gradient(180deg,#061b45 0%,#07111f 100%)!important;border:1px solid rgba(96,165,250,.18);box-shadow:0 8px 24px rgba(0,0,0,.45)}
@@ -427,7 +427,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
 .keypad .equals{background:linear-gradient(180deg,#22c55e,#15803d)!important;font-size:1.8rem!important}
 @media(max-height:700px){.calc-row{grid-template-columns:38px 72px 1fr auto!important}.field-icon{width:32px;height:32px;border-radius:11px;font-size:.9rem}.gp-icon{font-size:1.2rem}.row-label{font-size:.78rem!important}.row-value{font-size:clamp(1.2rem,6.3vw,1.9rem)!important}.keypad button{font-size:1.05rem!important}.keypad .op-key{font-size:1.25rem!important}}
 
-/* v2.14 fixed keypad button placement */
+/* v2.15 fixed keypad button placement */
 .keypad {
   grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
   grid-auto-rows: auto;
@@ -461,7 +461,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   min-width: 0;
 }
 
-/* v2.14 GP department overflow fix */
+/* v2.15 GP department overflow fix */
 .calc-row {
   min-width: 0;
 }
@@ -505,7 +505,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.14 portrait mode lock */
+/* v2.15 portrait mode lock */
 .portrait-lock-notice {
   display: none;
 }
@@ -549,7 +549,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.14 landscape remains functional with portrait-style centered panel */
+/* v2.15 landscape remains functional with portrait-style centered panel */
 .portrait-lock-notice {
   display: none !important;
 }
@@ -581,7 +581,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.14 stronger department button shortening */
+/* v2.15 stronger department button shortening */
 .row-gp {
   grid-template-columns: 42px 54px minmax(96px, 1fr) minmax(52px, auto) !important;
 }
@@ -621,7 +621,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.14 GP department name under value */
+/* v2.15 GP department name under value */
 .row-gp {
   grid-template-columns: 42px 54px minmax(108px, 1fr) minmax(52px, auto) !important;
 }
@@ -695,7 +695,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.14 portrait-primary request + landscape fallback panel */
+/* v2.15 portrait-primary request + landscape fallback panel */
 .portrait-lock-notice {
   display: none !important;
 }
@@ -796,7 +796,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.14 block order/value alignment */
+/* v2.15 block order/value alignment */
 .calc-row {
   grid-template-columns: 42px 60px minmax(0, 1fr) 66px !important;
   column-gap: 8px !important;
@@ -882,7 +882,7 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 }
 
-/* v2.14 landscape-only split layout: cards left, keypad right. Portrait layout is unchanged. */
+/* v2.15 landscape-only split layout: cards left, keypad right. Portrait layout is unchanged. */
 @media screen and (orientation: landscape) {
   html,
   body {
@@ -1058,6 +1058,247 @@ body{background:radial-gradient(circle at 50% 0%,#14233f 0%,#07111f 55%,#020617 
   }
 
   /* Keep existing keypad positions but make them fill the right-side panel cleanly. */
+  .key-0 { grid-column: 1 / 4 !important; }
+  .key-dot { grid-column: 4 / 6 !important; }
+  .key-back { grid-column: 4 / 6 !important; }
+  .key-clear { grid-column: 4 / 6 !important; }
+  .key-sign { grid-column: 4 / 6 !important; }
+
+  dialog {
+    max-height: calc(100dvh - 18px) !important;
+  }
+}
+
+/* v2.15 fixes */
+
+/* GP value alignment: all number values use the same right edge. */
+.calc-row {
+  grid-template-columns: 42px 60px minmax(0, 1fr) 66px !important;
+}
+
+.calc-row .row-value,
+.gp-value-stack,
+.gp-value-stack #gpDisplay {
+  justify-self: end !important;
+  text-align: right !important;
+}
+
+.gp-value-stack {
+  width: 100% !important;
+  display: grid !important;
+  justify-items: end !important;
+}
+
+.gp-value-stack #gpDisplay {
+  min-width: 92px !important;
+  width: auto !important;
+  display: inline-block !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.gp-dept-name {
+  width: 100% !important;
+  text-align: right !important;
+  justify-self: end !important;
+}
+
+.row-gp {
+  grid-template-columns: 42px 60px minmax(0, 1fr) 66px !important;
+}
+
+/* The landscape mode is applied using both media query and a JS class.
+   Portrait layout remains controlled by the normal portrait CSS above. */
+@media screen and (orientation: landscape), screen and (max-height: 520px) and (min-width: 640px) {
+  html,
+  body,
+  body.is-landscape-layout {
+    width: 100vw !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    overflow: hidden !important;
+    background:
+      radial-gradient(circle at 18% 8%, rgba(48, 101, 190, .25), transparent 32%),
+      radial-gradient(circle at 78% 55%, rgba(20, 82, 160, .16), transparent 36%),
+      #020917 !important;
+  }
+
+  body::before,
+  .portrait-lock-notice {
+    content: none !important;
+    display: none !important;
+  }
+
+  body.is-landscape-layout .app-shell,
+  .app-shell {
+    position: fixed !important;
+    inset: 0 !important;
+    transform: none !important;
+    width: 100vw !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: max(7px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(7px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)) !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    display: grid !important;
+    grid-template-columns: minmax(310px, 52vw) minmax(300px, 1fr) !important;
+    grid-template-rows: clamp(42px, 12dvh, 64px) minmax(0, 1fr) !important;
+    gap: 8px 12px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+  }
+
+  .app-header {
+    grid-column: 1 / 2 !important;
+    grid-row: 1 / 2 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 5px 10px !important;
+    border-radius: 15px !important;
+  }
+
+  .title-logo {
+    max-height: clamp(26px, 8dvh, 42px) !important;
+    max-width: 74% !important;
+  }
+
+  #settingsBtn {
+    width: clamp(36px, 8dvh, 48px) !important;
+    height: clamp(36px, 8dvh, 48px) !important;
+    border-radius: 13px !important;
+    font-size: clamp(1rem, 4.6dvh, 1.45rem) !important;
+  }
+
+  .calc-panel {
+    grid-column: 1 / 2 !important;
+    grid-row: 2 / 3 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    display: grid !important;
+    grid-template-rows: repeat(4, minmax(43px, 1fr)) minmax(33px, .52fr) !important;
+    gap: 6px !important;
+  }
+
+  .keypad {
+    grid-column: 2 / 3 !important;
+    grid-row: 1 / 3 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: clamp(8px, 1.25vw, 14px) !important;
+    box-sizing: border-box !important;
+    align-self: stretch !important;
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    grid-template-rows: repeat(5, minmax(0, 1fr)) !important;
+    gap: clamp(5px, .8vw, 10px) !important;
+    border-radius: 18px !important;
+    background: linear-gradient(145deg, rgba(18,42,79,.94), rgba(7,21,45,.97)) !important;
+    border: 1px solid rgba(140,170,225,.22) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 14px 34px rgba(0,0,0,.36) !important;
+  }
+
+  .calc-row,
+  .row-gp,
+  .row-rands,
+  .calc-row[data-field="rands"] {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: clamp(5px, .95dvh, 8px) clamp(10px, 1.25vw, 16px) !important;
+    border-radius: 14px !important;
+    grid-template-columns: clamp(30px, 6.2dvh, 42px) clamp(62px, 9vw, 92px) minmax(0, 1fr) clamp(58px, 8vw, 76px) !important;
+    column-gap: clamp(6px, 1vw, 11px) !important;
+  }
+
+  .field-icon {
+    width: clamp(30px, 6.2dvh, 42px) !important;
+    height: clamp(30px, 6.2dvh, 42px) !important;
+    border-radius: 11px !important;
+    font-size: clamp(.8rem, 2.6dvh, 1.12rem) !important;
+  }
+
+  .row-label {
+    font-size: clamp(.72rem, 2.7dvh, 1rem) !important;
+    white-space: nowrap !important;
+  }
+
+  .calc-row .row-value,
+  .gp-value-stack #gpDisplay {
+    font-size: clamp(1.35rem, 6.6dvh, 2.35rem) !important;
+    line-height: .95 !important;
+    min-width: clamp(82px, 13vw, 126px) !important;
+    text-align: right !important;
+    justify-self: end !important;
+  }
+
+  .gp-value-stack {
+    align-self: center !important;
+    justify-self: end !important;
+    width: 100% !important;
+  }
+
+  .gp-dept-name {
+    font-size: clamp(.42rem, 1.75dvh, .68rem) !important;
+    margin-top: 2px !important;
+  }
+
+  .row-actions,
+  .row-gp .row-actions,
+  .row-gp #deptBtn {
+    width: clamp(58px, 8vw, 76px) !important;
+    min-width: clamp(58px, 8vw, 76px) !important;
+    max-width: clamp(58px, 8vw, 76px) !important;
+    justify-self: end !important;
+  }
+
+  .mini-btn,
+  .row-gp #deptBtn {
+    min-height: clamp(28px, 5.3dvh, 40px) !important;
+    border-radius: 10px !important;
+    font-size: clamp(.58rem, 2.2dvh, .86rem) !important;
+    padding: 4px 6px !important;
+  }
+
+  .calc-row[data-field="rands"]::after {
+    content: "" !important;
+    width: clamp(58px, 8vw, 76px) !important;
+    min-width: clamp(58px, 8vw, 76px) !important;
+  }
+
+  .info-strip {
+    min-height: 0 !important;
+    height: 100% !important;
+    border-radius: 13px !important;
+    padding: 5px 12px !important;
+    font-size: clamp(.68rem, 2.6dvh, .96rem) !important;
+  }
+
+  .keypad button {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    border-radius: clamp(11px, 1.8vw, 20px) !important;
+    font-size: clamp(1.15rem, 5.6dvh, 1.95rem) !important;
+  }
+
+  .keypad .op-key,
+  .keypad .equals {
+    font-size: clamp(1.2rem, 5.9dvh, 2.1rem) !important;
+  }
+
   .key-0 { grid-column: 1 / 4 !important; }
   .key-dot { grid-column: 4 / 6 !important; }
   .key-back { grid-column: 4 / 6 !important; }
