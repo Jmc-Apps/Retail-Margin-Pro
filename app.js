@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "v2.17";
+const APP_VERSION = "v2.18";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
@@ -500,7 +500,7 @@ renderToggles();
 
 
 
-// v2.17 force reload from server
+// v2.18 force reload from server
 const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
 const updateStatus = document.getElementById("updateStatus");
 
@@ -555,7 +555,7 @@ if (checkUpdatesBtn) {
 
 
 
-// v2.17 landscape layout fallback for iOS PWA rotation behavior
+// v2.18 landscape layout fallback for iOS PWA rotation behavior
 function updateLandscapeLayoutClass() {
   const isLandscape = window.innerWidth > window.innerHeight && window.innerWidth >= 640;
   document.body.classList.toggle("is-landscape-layout", isLandscape);
@@ -563,4 +563,20 @@ function updateLandscapeLayoutClass() {
 window.addEventListener("resize", updateLandscapeLayoutClass);
 window.addEventListener("orientationchange", () => setTimeout(updateLandscapeLayoutClass, 120));
 updateLandscapeLayoutClass();
+
+
+
+// v2.18 left Cost icon toggles Cost lock
+const costLockIconEl = document.getElementById("costLockIcon");
+if (costLockIconEl) {
+  costLockIconEl.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const currentCost = displayToExcl("cost", num(values.cost) || 0);
+    if (!costLocked && isFinite(currentCost)) lockedCostExcl = currentCost;
+    costLocked = !costLocked;
+    if (costLocked) lockedCostExcl = displayToExcl("cost", num(values.cost) || 0);
+    renderToggles();
+    compute();
+  });
+}
 
