@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "v2.19";
+const APP_VERSION = "v2.20";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
@@ -143,14 +143,18 @@ function updateGpDeptName(){
   label.title = selectedDept ? selectedDept.name : "";
 }
 
+function updateCostLockIconState(){
+  const icon = document.getElementById("costLockIcon");
+  if (!icon) return;
+  icon.textContent = costLocked ? "🔒" : "🔓";
+  icon.classList.toggle("locked", costLocked);
+  icon.title = costLocked ? "Cost locked" : "Cost unlocked";
+  icon.setAttribute("aria-label", costLocked ? "Cost locked" : "Cost unlocked");
+  icon.setAttribute("aria-pressed", costLocked ? "true" : "false");
+}
+
 function renderToggles(){
-  const costLockIcon = $("costLockIcon");
-  if (costLockIcon) {
-    costLockIcon.textContent = costLocked ? "🔒" : "🔓";
-    costLockIcon.classList.toggle("locked", costLocked);
-    costLockIcon.title = costLocked ? "Cost locked" : "Cost unlocked";
-    costLockIcon.setAttribute("aria-label", costLocked ? "Cost locked" : "Cost unlocked");
-  }
+  updateCostLockIconState();
   $("costVatBtn").classList.toggle("active", costVat);
   $("costVatBtn").textContent = costVat ? "VAT ✓" : "VAT";
   $("sellVatBtn").classList.toggle("active", sellVat);
@@ -494,7 +498,7 @@ renderToggles();
 
 
 
-// v2.19 force reload from server
+// v2.20 force reload from server
 const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
 const updateStatus = document.getElementById("updateStatus");
 
@@ -549,7 +553,7 @@ if (checkUpdatesBtn) {
 
 
 
-// v2.19 landscape layout fallback for iOS PWA rotation behavior
+// v2.20 landscape layout fallback for iOS PWA rotation behavior
 function updateLandscapeLayoutClass() {
   const isLandscape = window.innerWidth > window.innerHeight && window.innerWidth >= 640;
   document.body.classList.toggle("is-landscape-layout", isLandscape);
@@ -576,7 +580,7 @@ if (costLockIconEl) {
 
 
 
-// v2.19 left Cost icon is the only Cost lock button
+// v2.20 left Cost icon is the only Cost lock button
 const costLockIconElV219 = document.getElementById("costLockIcon");
 if (costLockIconElV219) {
   costLockIconElV219.addEventListener("click", (event) => {
@@ -589,4 +593,43 @@ if (costLockIconElV219) {
     compute();
   });
 }
+
+
+
+// v2.20 robust Cost lock icon control
+function toggleCostLockFromIcon(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  const c = displayToExcl("cost", num(values.cost) || 0);
+  if (!costLocked && !Number.isFinite(c)) {
+    showProblem("Enter Cost before locking.");
+    return;
+  }
+  if (!costLocked) {
+    lockedCostExcl = c;
+    costLocked = true;
+  } else {
+    costLocked = false;
+    lockedCostExcl = null;
+  }
+  updateCostLockIconState();
+  renderToggles();
+  compute();
+}
+
+document.addEventListener("click", (event) => {
+  const icon = event.target.closest && event.target.closest("#costLockIcon");
+  if (!icon) return;
+  toggleCostLockFromIcon(event);
+}, true);
+
+document.addEventListener("keydown", (event) => {
+  const icon = event.target && event.target.closest && event.target.closest("#costLockIcon");
+  if (!icon) return;
+  if (event.key === "Enter" || event.key === " ") {
+    toggleCostLockFromIcon(event);
+  }
+}, true);
 
