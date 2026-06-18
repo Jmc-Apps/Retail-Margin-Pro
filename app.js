@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "v2.22";
+const APP_VERSION = "v2.23";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
@@ -440,10 +440,14 @@ function renderDepartmentList(){
     row.className = index === inlineEditingDeptIndex ? "dept-row editing" : "dept-row";
     if (index === inlineEditingDeptIndex) {
       row.innerHTML = `
-        <input class="dept-inline-name" data-inline-name="${index}" value="${dept.name.replace(/"/g, "&quot;")}" aria-label="Department name">
-        <input class="dept-inline-gp" data-inline-gp="${index}" value="${fmt(dept.gp)}" inputmode="decimal" aria-label="GP percent">
-        <button type="button" class="dept-inline-save" data-inline-save="${index}">Save</button>
-        <button type="button" class="dept-inline-cancel" data-inline-cancel="${index}">Cancel</button>
+        <div class="dept-inline-fields">
+          <input class="dept-inline-name" data-inline-name="${index}" value="${dept.name.replace(/"/g, "&quot;")}" aria-label="Department name">
+          <input class="dept-inline-gp" data-inline-gp="${index}" value="${fmt(dept.gp)}" inputmode="decimal" aria-label="GP percent">
+        </div>
+        <div class="dept-inline-actions">
+          <button type="button" class="dept-inline-save" data-inline-save="${index}">Save</button>
+          <button type="button" class="dept-inline-cancel" data-inline-cancel="${index}">Cancel</button>
+        </div>
       `;
     } else {
       row.innerHTML = `<span><strong>${dept.name}</strong><br>${fmt(dept.gp)}%</span>
@@ -549,7 +553,7 @@ renderToggles();
 
 
 
-// v2.22 force reload from server
+// v2.23 force reload from server
 const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
 const updateStatus = document.getElementById("updateStatus");
 
@@ -604,7 +608,7 @@ if (checkUpdatesBtn) {
 
 
 
-// v2.22 landscape layout fallback for iOS PWA rotation behavior
+// v2.23 landscape layout fallback for iOS PWA rotation behavior
 function updateLandscapeLayoutClass() {
   const isLandscape = window.innerWidth > window.innerHeight && window.innerWidth >= 640;
   document.body.classList.toggle("is-landscape-layout", isLandscape);
@@ -631,7 +635,7 @@ if (costLockIconEl) {
 
 
 
-// v2.22 left Cost icon is the only Cost lock button
+// v2.23 left Cost icon is the only Cost lock button
 const costLockIconElV219 = document.getElementById("costLockIcon");
 if (costLockIconElV219) {
   costLockIconElV219.addEventListener("click", (event) => {
@@ -647,7 +651,7 @@ if (costLockIconElV219) {
 
 
 
-// v2.22 robust Cost lock icon control
+// v2.23 robust Cost lock icon control
 function toggleCostLockFromIcon(event) {
   if (event) {
     event.preventDefault();
