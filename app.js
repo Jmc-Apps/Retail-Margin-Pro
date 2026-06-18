@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "v2.21";
+const APP_VERSION = "v2.22";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
@@ -44,6 +44,7 @@ let costLocked = false;
 let lockedCostExcl = null;
 let selectedDept = null;
 let editingDeptIndex = null;
+let inlineEditingDeptIndex = null;
 
 function loadSettings(){
   try{
@@ -436,24 +437,64 @@ function renderDepartmentList(){
   list.innerHTML = "";
   settings.departments.forEach((dept, index) => {
     const row = document.createElement("div");
-    row.className = "dept-row";
-    row.innerHTML = `<span><strong>${dept.name}</strong><br>${fmt(dept.gp)}%</span>
-      <span><button type="button" data-edit="${index}">Edit</button> <button type="button" data-del="${index}">Delete</button></span>`;
+    row.className = index === inlineEditingDeptIndex ? "dept-row editing" : "dept-row";
+    if (index === inlineEditingDeptIndex) {
+      row.innerHTML = `
+        <input class="dept-inline-name" data-inline-name="${index}" value="${dept.name.replace(/"/g, "&quot;")}" aria-label="Department name">
+        <input class="dept-inline-gp" data-inline-gp="${index}" value="${fmt(dept.gp)}" inputmode="decimal" aria-label="GP percent">
+        <button type="button" class="dept-inline-save" data-inline-save="${index}">Save</button>
+        <button type="button" class="dept-inline-cancel" data-inline-cancel="${index}">Cancel</button>
+      `;
+    } else {
+      row.innerHTML = `<span><strong>${dept.name}</strong><br>${fmt(dept.gp)}%</span>
+        <span><button type="button" data-edit="${index}">Edit</button> <button type="button" data-del="${index}">Delete</button></span>`;
+    }
     list.appendChild(row);
   });
 }
 $("departmentList").addEventListener("click", e => {
   const edit = e.target.closest("[data-edit]");
   const del = e.target.closest("[data-del]");
+  const save = e.target.closest("[data-inline-save]");
+  const cancel = e.target.closest("[data-inline-cancel]");
+
   if (edit){
-    editingDeptIndex = Number(edit.dataset.edit);
-    const dept = settings.departments[editingDeptIndex];
-    $("deptNameInput").value = dept.name;
-    $("deptGpInput").value = fmt(dept.gp);
-    $("addDeptBtn").textContent = "Update Department";
+    inlineEditingDeptIndex = Number(edit.dataset.edit);
+    editingDeptIndex = null;
+    renderDepartmentList();
+    setTimeout(() => {
+      const input = document.querySelector(`[data-inline-name="${inlineEditingDeptIndex}"]`);
+      if (input) input.focus();
+    }, 0);
+    return;
   }
+
+  if (save){
+    const index = Number(save.dataset.inlineSave);
+    const nameInput = document.querySelector(`[data-inline-name="${index}"]`);
+    const gpInput = document.querySelector(`[data-inline-gp="${index}"]`);
+    const name = nameInput ? nameInput.value.trim().toUpperCase() : "";
+    const gp = gpInput ? num(gpInput.value) : null;
+    if (!name || !Number.isFinite(gp)) return;
+    settings.departments[index] = { name, gp };
+    inlineEditingDeptIndex = null;
+    editingDeptIndex = null;
+    renderDepartmentList();
+    renderDeptChoices();
+    renderToggles();
+    return;
+  }
+
+  if (cancel){
+    inlineEditingDeptIndex = null;
+    editingDeptIndex = null;
+    renderDepartmentList();
+    return;
+  }
+
   if (del){
     settings.departments.splice(Number(del.dataset.del), 1);
+    inlineEditingDeptIndex = null;
     renderDepartmentList();
   }
 });
@@ -461,13 +502,10 @@ $("addDeptBtn").addEventListener("click", () => {
   const name = $("deptNameInput").value.trim().toUpperCase();
   const gp = num($("deptGpInput").value);
   if (!name || !Number.isFinite(gp)) return;
-  if (editingDeptIndex !== null){
-    settings.departments[editingDeptIndex] = { name, gp };
-    editingDeptIndex = null;
-    $("addDeptBtn").textContent = "Add Department";
-  } else {
-    settings.departments.push({ name, gp });
-  }
+  settings.departments.push({ name, gp });
+  editingDeptIndex = null;
+  inlineEditingDeptIndex = null;
+  $("addDeptBtn").textContent = "Add Department";
   $("deptNameInput").value = "";
   $("deptGpInput").value = "";
   renderDepartmentList();
@@ -511,7 +549,7 @@ renderToggles();
 
 
 
-// v2.21 force reload from server
+// v2.22 force reload from server
 const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
 const updateStatus = document.getElementById("updateStatus");
 
@@ -566,7 +604,7 @@ if (checkUpdatesBtn) {
 
 
 
-// v2.21 landscape layout fallback for iOS PWA rotation behavior
+// v2.22 landscape layout fallback for iOS PWA rotation behavior
 function updateLandscapeLayoutClass() {
   const isLandscape = window.innerWidth > window.innerHeight && window.innerWidth >= 640;
   document.body.classList.toggle("is-landscape-layout", isLandscape);
@@ -593,7 +631,7 @@ if (costLockIconEl) {
 
 
 
-// v2.21 left Cost icon is the only Cost lock button
+// v2.22 left Cost icon is the only Cost lock button
 const costLockIconElV219 = document.getElementById("costLockIcon");
 if (costLockIconElV219) {
   costLockIconElV219.addEventListener("click", (event) => {
@@ -609,7 +647,7 @@ if (costLockIconElV219) {
 
 
 
-// v2.21 robust Cost lock icon control
+// v2.22 robust Cost lock icon control
 function toggleCostLockFromIcon(event) {
   if (event) {
     event.preventDefault();
@@ -648,4 +686,5 @@ document.addEventListener("keydown", (event) => {
     toggleCostLockFromIcon(event);
   }
 }, true);
+
 
