@@ -1,6 +1,6 @@
 {
   "name": "Retail Margin Pro",
-  "short_name": "RMP",
+  "short_name": "Retail Margin Pro",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#eef2f7",
@@ -32,5 +32,5 @@
       "purpose": "any"
     }
   ],
-  "version": "2.23"
+  "version": "2.26"
 }

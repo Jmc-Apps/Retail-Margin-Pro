@@ -1,26 +1,10 @@
 "use strict";
 
-const APP_VERSION = "v2.23";
+const APP_VERSION = "v2.26";
 const KEY = "retailMarginPro.v2.settings";
 const defaults = {
   vatRate: 15,
-  departments: [
-    { name: "BUTCHERY MEAT", gp: 32 },
-    { name: "CHICKEN", gp: 20 },
-    { name: "FRESH PRODUCE", gp: 36 },
-    { name: "HMR", gp: 45 },
-    { name: "BREAD BOUGHT IN", gp: 15 },
-    { name: "BREAD", gp: 30 },
-    { name: "CONFECTIONARY BOUGHT IN", gp: 36 },
-    { name: "CONFECTIONARY", gp: 55 },
-    { name: "GROCERIES", gp: 24 },
-    { name: "HEALTH & BEAUTY", gp: 22 },
-    { name: "NON FOODS", gp: 24 },
-    { name: "PERISHABLES", gp: 22 },
-    { name: "EGGS", gp: 24 },
-    { name: "FROZENS", gp: 22 },
-    { name: "GIFTS", gp: 24 }
-  ]
+  departments: []
 };
 
 const $ = id => document.getElementById(id);
@@ -51,7 +35,7 @@ function loadSettings(){
     const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
     return {
       vatRate: typeof saved.vatRate === "number" ? saved.vatRate : defaults.vatRate,
-      departments: Array.isArray(saved.departments) ? saved.departments : defaults.departments
+      departments: Array.isArray(saved.departments) ? saved.departments : []
     };
   }catch{
     return structuredClone(defaults);
@@ -415,6 +399,13 @@ document.querySelectorAll("[data-close]").forEach(btn => {
 function renderDeptChoices(){
   const box = $("deptChoices");
   box.innerHTML = "";
+  if (!settings.departments.length) {
+    const message = document.createElement("div");
+    message.className = "empty-dept-message";
+    message.innerHTML = `<strong>Load departments in Settings</strong><span>Add your departments and GP% values before using the Dept button.</span>`;
+    box.appendChild(message);
+    return;
+  }
   settings.departments.forEach(dept => {
     const row = document.createElement("button");
     row.type = "button";
@@ -435,6 +426,10 @@ function renderDeptChoices(){
 function renderDepartmentList(){
   const list = $("departmentList");
   list.innerHTML = "";
+  if (!settings.departments.length) {
+    list.innerHTML = `<div class="empty-dept-message settings-empty"><strong>No departments loaded</strong><span>Add your departments below.</span></div>`;
+    return;
+  }
   settings.departments.forEach((dept, index) => {
     const row = document.createElement("div");
     row.className = index === inlineEditingDeptIndex ? "dept-row editing" : "dept-row";
@@ -553,7 +548,7 @@ renderToggles();
 
 
 
-// v2.23 force reload from server
+// v2.26 force reload from server
 const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
 const updateStatus = document.getElementById("updateStatus");
 
@@ -601,14 +596,14 @@ async function forceReloadFromServer() {
 }
 
 if (checkUpdatesBtn) {
-  checkUpdatesBtn.textContent = "Force Reload from Server";
-  if (updateStatus) updateStatus.textContent = "Reloads the latest hosted files from the server.";
+  checkUpdatesBtn.textContent = "Check for Updates";
+  if (updateStatus) updateStatus.textContent = "Checks for updates and reloads the latest hosted files from the server.";
   checkUpdatesBtn.addEventListener("click", forceReloadFromServer);
 }
 
 
 
-// v2.23 landscape layout fallback for iOS PWA rotation behavior
+// v2.26 landscape layout fallback for iOS PWA rotation behavior
 function updateLandscapeLayoutClass() {
   const isLandscape = window.innerWidth > window.innerHeight && window.innerWidth >= 640;
   document.body.classList.toggle("is-landscape-layout", isLandscape);
@@ -635,7 +630,7 @@ if (costLockIconEl) {
 
 
 
-// v2.23 left Cost icon is the only Cost lock button
+// v2.26 left Cost icon is the only Cost lock button
 const costLockIconElV219 = document.getElementById("costLockIcon");
 if (costLockIconElV219) {
   costLockIconElV219.addEventListener("click", (event) => {
@@ -651,7 +646,7 @@ if (costLockIconElV219) {
 
 
 
-// v2.23 robust Cost lock icon control
+// v2.26 robust Cost lock icon control
 function toggleCostLockFromIcon(event) {
   if (event) {
     event.preventDefault();

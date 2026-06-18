@@ -1,4 +1,4 @@
-const CACHE_NAME = "retail-margin-pro-v2.23";
+const CACHE_NAME = "retail-margin-pro-v2.26";
 const APP_SHELL = [
   "./",
   "index.html",
